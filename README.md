@@ -82,7 +82,9 @@ npm run dev        # en otra terminal
 # abre http://localhost:4321/admin/
 ```
 
-`local_backend: true` ya está activado en `config.yml`.
+`local_backend: true` ya está activado en `config.yml`. El proyecto ya está inicializado
+como **repositorio Git** (con un commit inicial), requisito del backend local de Decap para
+guardar los cambios. Si reinicias el proxy tras crear/editar el repo, vuelve a lanzar `npm run cms`.
 
 ### Publicar
 
