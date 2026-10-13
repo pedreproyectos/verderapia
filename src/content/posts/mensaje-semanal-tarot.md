@@ -1,0 +1,22 @@
+---
+title: "Mensaje semanal: elige tu carta de tarot"
+description: "Cierra los ojos, conéctate con tu respiración y elige la carta que más te llame la atención. Un mensaje guía para tu semana."
+date: 2025-05-12
+cover: "/images/verderapia/_X7A6305.webp"
+tags: ["tarot", "mensaje semanal", "bienestar"]
+author: "Ingrid — Verderapia"
+draft: false
+---
+
+Iniciamos la semana con los mensajitos.
+
+1. Cierra los ojos.
+2. Conéctate con tu respiración.
+3. Lentamente abre tus ojos.
+4. Elige la carta que más te llame la atención.
+
+Dentro del día subiremos los mensajes. Puedes dejar tu opción en comentarios y te leeremos.
+
+Esperamos que el mensaje que hayas elegido te sirva como una guía para esta semana.
+
+*Tarot: Light Seer's. Si te resuena puedes agendar una hora por WhatsApp 987548041 o DM.*

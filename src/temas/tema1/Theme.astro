@@ -1,0 +1,177 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Slider from '../../components/Slider.astro';
+import Historia from '../../components/Historia.astro';
+import Pilares from '../../components/Pilares.astro';
+import Terapias from '../../components/Terapias.astro';
+import Yoga from '../../components/Yoga.astro';
+import Talleres from '../../components/Talleres.astro';
+import PostsSection from '../../components/PostsSection.astro';
+import InstagramFeed from '../../components/InstagramFeed.astro';
+import GiftCard from '../../components/GiftCard.astro';
+import Contacto from '../../components/Contacto.astro';
+import Footer from '../../components/Footer.astro';
+import { site } from '../../data/site';
+import { galeria } from '../../data/images';
+
+const slides = galeria.hero.map((src, i) => ({
+  src,
+  alt: `Verderapia — parcela sustentable ${i + 1}`,
+}));
+---
+
+<Base tema={1}>
+  <SiteNav variant="transparent" />
+
+  <!-- HERO -->
+  <section class="hero" aria-label="Bienvenida">
+    <div class="hero__slider">
+      <Slider slides={slides} variant="kenburns" autoplay={7000} showCaptions={false} priority />
+    </div>
+    <div class="hero__overlay">
+      <div class="container hero__content">
+        <p class="hero__kicker">{site.heroKicker}</p>
+        <h1 class="hero__title">{site.heroTitulo}</h1>
+        <p class="hero__text">{site.historia}</p>
+        <div class="hero__actions">
+          <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Agenda tu terapia</a>
+          <a class="btn hero__ghost" href="#verde">Conoce la parcela</a>
+        </div>
+      </div>
+    </div>
+    <a class="hero__scroll" href="#historia" aria-label="Bajar">
+      <span></span>
+    </a>
+  </section>
+
+  <!-- HISTORIA -->
+  <Historia variant="split" />
+
+  <!-- PILARES -->
+  <Pilares variant="rows" />
+
+  <!-- TERAPIAS -->
+  <Terapias variant="list" />
+
+  <!-- YOGA -->
+  <Yoga />
+
+  <!-- TALLERES -->
+  <Talleres />
+
+  <!-- NOVEDADES -->
+  <PostsSection />
+
+  <!-- INSTAGRAM -->
+  <InstagramFeed />
+
+  <!-- GIFT CARD / DESCUENTOS -->
+  <GiftCard />
+
+  <!-- CONTACTO -->
+  <Contacto />
+
+  <Footer />
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    overflow: hidden;
+  }
+  .hero__slider {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero__slider :global(.slider) {
+    border-radius: 0;
+    height: 100%;
+  }
+  .hero__overlay {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    align-items: center;
+    padding-block: 8rem 5rem;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(20, 34, 24, 0.55) 0%, rgba(20, 34, 24, 0.25) 40%, rgba(20, 34, 24, 0.78) 100%);
+  }
+  .hero__content {
+    max-width: 780px;
+    color: #fff;
+  }
+  .hero__kicker {
+    display: inline-block;
+    padding: 0.5em 1.1em;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    backdrop-filter: blur(6px);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .hero__title {
+    margin: 1.4rem 0 1.2rem;
+    font-size: clamp(2.6rem, 7vw, 5.4rem);
+    text-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
+  }
+  .hero__text {
+    max-width: 58ch;
+    font-size: clamp(1rem, 1.6vw, 1.2rem);
+    opacity: 0.92;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 2rem;
+    pointer-events: auto;
+  }
+  .hero__ghost {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    box-shadow: none;
+  }
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 2rem;
+    z-index: 3;
+    transform: translateX(-50%);
+    width: 26px;
+    height: 44px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+  }
+  .hero__scroll span {
+    position: absolute;
+    left: 50%;
+    top: 8px;
+    width: 4px;
+    height: 8px;
+    border-radius: 999px;
+    background: #fff;
+    transform: translateX(-50%);
+    animation: scrollcue 1.8s ease-in-out infinite;
+  }
+  @keyframes scrollcue {
+    0%, 100% { transform: translate(-50%, 0); opacity: 1; }
+    50% { transform: translate(-50%, 14px); opacity: 0.4; }
+  }
+
+  /* Fondos alternados para dar ritmo visual */
+  :global([data-tema='1'] #terapias),
+  :global([data-tema='1'] #instagram) {
+    background: var(--bg-2);
+  }
+  :global([data-tema='1'] #giftcard) {
+    background: var(--bg);
+  }
+</style>

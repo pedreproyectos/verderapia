@@ -1,0 +1,32 @@
+---
+// Panel de contenidos (Decap CMS / Sveltia CMS).
+// Al ser una página de Astro, funciona tanto en `npm run dev` como en la build
+// (una carpeta en /public solo se sirve como /admin/index.html en dev).
+export const prerender = true;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin · Verderapia</title>
+    <link rel="icon" href="/favicon.svg" />
+  </head>
+  <body>
+    <!--
+      Panel basado en Git. Lee la configuración de /admin/config.yml
+
+      · Edición local:  ejecuta `npm run cms` (decap-server) en otra terminal
+                        y luego abre http://localhost:4321/admin/
+      · Producción:     despliega en Netlify (Git Gateway) o cambia el `backend`
+                        en config.yml por `github`.
+
+      ¿Prefieres Sveltia CMS? Reemplaza el script de abajo por:
+        <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+      Sveltia usa exactamente el mismo config.yml.
+    -->
+    <script src="https://unpkg.com/decap-cms@^3.6.4/dist/decap-cms.js"></script>
+  </body>
+</html>

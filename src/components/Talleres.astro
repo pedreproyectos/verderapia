@@ -1,0 +1,99 @@
+---
+import { site } from '../data/site';
+import { galeria } from '../data/images';
+
+const taller = site.talleres[0];
+const img = galeria.verde[3];
+---
+
+<section class="talleres section" id="talleres" aria-labelledby="talleres-title">
+  <div class="container talleres__grid">
+    <div class="talleres__media" data-reveal>
+      <img src={img} alt="Talleres de agricultura sustentable en Verderapia" loading="lazy" decoding="async" />
+    </div>
+    <div class="talleres__body" data-reveal style="--reveal-delay:120ms">
+      <p class="eyebrow">Talleres</p>
+      <h2 id="talleres-title">{taller.nombre}</h2>
+      <p class="lead">{taller.descripcion}</p>
+      <ul class="talleres__temas">
+        {taller.temas.map((t) => <li>{t}</li>)}
+      </ul>
+      <dl class="talleres__meta">
+        <div><dt>Horario</dt><dd>{taller.horario}</dd></div>
+        <div><dt>Fecha</dt><dd>{taller.fecha}</dd></div>
+        <div><dt>Retribución</dt><dd>{taller.retribucion}</dd></div>
+        <div><dt>Expositor</dt><dd>{taller.expositor}</dd></div>
+      </dl>
+      <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Inscribirme al taller</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .talleres__grid {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+  }
+  .talleres__media {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    aspect-ratio: 4 / 4.6;
+  }
+  .talleres__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .talleres__body h2 {
+    margin: 0.7rem 0 1rem;
+  }
+  .talleres__temas {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.4rem;
+    margin: 1.5rem 0;
+  }
+  .talleres__temas li {
+    position: relative;
+    padding-left: 1.4rem;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .talleres__temas li::before {
+    content: '🪱';
+    position: absolute;
+    left: 0;
+    font-size: 0.8rem;
+  }
+  .talleres__meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.6rem;
+    padding: 1.4rem 0;
+    margin-bottom: 1.4rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .talleres__meta dt {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+  .talleres__meta dd {
+    margin: 0;
+    font-weight: 600;
+  }
+  @media (max-width: 860px) {
+    .talleres__grid {
+      grid-template-columns: 1fr;
+    }
+    .talleres__media {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

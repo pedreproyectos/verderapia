@@ -1,0 +1,220 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Slider from '../../components/Slider.astro';
+import Historia from '../../components/Historia.astro';
+import Pilares from '../../components/Pilares.astro';
+import Terapias from '../../components/Terapias.astro';
+import Yoga from '../../components/Yoga.astro';
+import Talleres from '../../components/Talleres.astro';
+import PostsSection from '../../components/PostsSection.astro';
+import InstagramFeed from '../../components/InstagramFeed.astro';
+import GiftCard from '../../components/GiftCard.astro';
+import Contacto from '../../components/Contacto.astro';
+import Footer from '../../components/Footer.astro';
+import { site } from '../../data/site';
+import { galeria } from '../../data/images';
+
+const slides = galeria.hero.map((src, i) => ({
+  src,
+  alt: `Verderapia ${i + 1}`,
+}));
+
+const ticker = [
+  'Verde',
+  'Arte',
+  'Terapia',
+  'Yoga',
+  'Tarot',
+  'Reiki',
+  'Cama de Jade',
+  'Lombricultura',
+  'Compost',
+  'Gift Card',
+];
+---
+
+<Base tema={2}>
+  <SiteNav variant="solid" />
+
+  <!-- HERO EDITORIAL -->
+  <section class="ehero" aria-label="Bienvenida">
+    <div class="container ehero__grid">
+      <div class="ehero__left">
+        <p class="ehero__meta">
+          <span>Verderapia</span>
+          <span>Quilpué · Chile</span>
+          <span>Est. parcela sustentable</span>
+        </p>
+        <h1 class="ehero__title">
+          Lugar de reencuentro y conexión con nuestras <em>raíces</em>.
+        </h1>
+        <p class="ehero__text">{site.historia}</p>
+        <div class="ehero__actions">
+          <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Agenda tu terapia</a>
+          <a class="btn btn--ghost" href="#verde">Conoce la parcela</a>
+        </div>
+        <ul class="ehero__stats">
+          <li><strong>04</strong><span>elementos</span></li>
+          <li><strong>09</strong><span>terapias</span></li>
+          <li><strong>03</strong><span>días de yoga</span></li>
+        </ul>
+      </div>
+
+      <div class="ehero__right">
+        <Slider slides={slides} variant="slide" autoplay={5500} showCaptions={false} priority />
+        <p class="ehero__caption">
+          <span>Retratos de la parcela</span>
+          <span>01 / 04</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker__track">
+        {[...ticker, ...ticker].map((t) => (
+          <span class="ticker__item">{t}<i></i></span>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <Historia variant="centered" />
+  <Pilares variant="cards" />
+  <Terapias variant="accordion" />
+  <Yoga />
+  <Talleres />
+  <PostsSection />
+  <InstagramFeed />
+  <GiftCard />
+  <Contacto />
+  <Footer />
+</Base>
+
+<style>
+  .ehero {
+    padding-top: clamp(7rem, 12vw, 9rem);
+    padding-bottom: clamp(2rem, 4vw, 3rem);
+  }
+  .ehero__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(2rem, 6vw, 5rem);
+    align-items: center;
+  }
+  .ehero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.6rem;
+    padding-bottom: 1.4rem;
+    margin-bottom: 1.6rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.74rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ehero__title {
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    font-weight: 400;
+    line-height: 0.98;
+  }
+  .ehero__title em {
+    font-style: italic;
+    color: var(--brand);
+  }
+  .ehero__text {
+    margin: 1.6rem 0 2rem;
+    max-width: 52ch;
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    color: var(--ink-soft);
+  }
+  .ehero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .ehero__stats {
+    display: flex;
+    gap: 2.4rem;
+    margin-top: 2.6rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line);
+  }
+  .ehero__stats li {
+    display: flex;
+    flex-direction: column;
+  }
+  .ehero__stats strong {
+    font-family: var(--font-display);
+    font-size: 1.9rem;
+    font-weight: 400;
+    line-height: 1;
+  }
+  .ehero__stats span {
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+  .ehero__right {
+    position: relative;
+  }
+  .ehero__right :global(.slider) {
+    aspect-ratio: 4 / 5;
+    border-radius: 0;
+  }
+  .ehero__caption {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.9rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Ticker */
+  .ticker {
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-block: 1.1rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .ticker__track {
+    display: flex;
+    gap: 2.5rem;
+    width: max-content;
+    animation: ticker 32s linear infinite;
+  }
+  .ticker__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 2.5rem;
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .ticker__item i {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--brand-2);
+  }
+  @keyframes ticker {
+    to { transform: translateX(-50%); }
+  }
+
+  @media (max-width: 900px) {
+    .ehero__grid {
+      grid-template-columns: 1fr;
+    }
+    .ehero__right :global(.slider) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+</style>

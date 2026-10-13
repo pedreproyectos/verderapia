@@ -1,0 +1,90 @@
+# Configuración del panel de contenidos (Decap CMS / Sveltia CMS)
+# Compatible con ambos: solo cambia el <script> en index.html si usas Sveltia.
+
+backend:
+  name: git-gateway
+  branch: main
+
+# Permite editar en local ejecutando:  npm run cms   (npx decap-server)
+local_backend: true
+
+# Carpeta donde el CMS sube las imágenes y ruta pública con la que se referencian
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+locale: es
+publish_mode: simple
+
+collections:
+  - name: posts
+    label: Novedades
+    label_singular: Novedad
+    description: >-
+      Entradas del blog que aparecen en la sección "Novedades" de los tres temas
+      y en /posts.
+    folder: src/content/posts
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: Título, widget: string }
+      - { name: description, label: Descripción, widget: text }
+      - { name: date, label: Fecha, widget: datetime, date_format: "YYYY-MM-DD", time_format: false }
+      - name: cover
+        label: Imagen de portada
+        widget: image
+        required: false
+        choose_url: true
+        media_library:
+          config:
+            multiple: false
+      - { name: tags, label: Etiquetas, widget: list, required: false, default: [] }
+      - { name: author, label: Autor, widget: string, default: "Ingrid — Verderapia" }
+      - { name: draft, label: Borrador, widget: boolean, default: false }
+      - { name: body, label: Contenido, widget: markdown }
+
+  - name: instagram
+    label: Feed de Instagram
+    label_singular: Post de Instagram
+    description: >-
+      Publicaciones que se muestran en el feed de Instagram del sitio. Puedes
+      pegar la imagen y el texto de tus posts reales de Instagram.
+    folder: src/content/instagram
+    create: true
+    slug: "ig-{{slug}}"
+    extension: md
+    format: frontmatter
+    sortable_fields: [order, date]
+    fields:
+      - { name: caption, label: Texto del post, widget: text }
+      - name: image
+        label: Imagen
+        widget: image
+        choose_url: true
+        media_library:
+          config:
+            multiple: false
+      - { name: permalink, label: Enlace al post, widget: string, default: "https://www.instagram.com/verderapia/", required: false }
+      - { name: date, label: Fecha, widget: datetime, date_format: "YYYY-MM-DD", time_format: false }
+      - { name: likes, label: Me gusta, widget: number, default: 0, required: false, value_type: int }
+      - { name: order, label: Orden en el feed, widget: number, default: 0, required: false, value_type: int }
+
+  - name: configuracion
+    label: Configuración del sitio
+    files:
+      - name: instagram_settings
+        label: Instagram
+        file: src/data/instagram.json
+        fields:
+          - { name: username, label: Usuario de Instagram, widget: string, default: "verderapia" }
+          - { name: profile_url, label: URL del perfil, widget: string, default: "https://www.instagram.com/verderapia/" }
+          - name: embed_src
+            label: Embed externo (opcional)
+            widget: string
+            required: false
+            hint: >-
+              Pega aquí la URL de un widget (LightWidget, Behold, EmbedSocial…)
+              para mostrar un feed en vivo. Déjalo vacío para usar los posts
+              administrados en la colección "Feed de Instagram".

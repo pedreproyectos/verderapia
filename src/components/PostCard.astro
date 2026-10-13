@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+  class?: string;
+}
+
+const { post, class: className = '' } = Astro.props;
+const { title, description, date, cover, tags } = post.data;
+
+const fecha = new Intl.DateTimeFormat('es-CL', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(date);
+---
+
+<article class:list={['post-card', className]}>
+  <a class="post-card__link" href={`/posts/${post.id}/`}>
+    {cover && (
+      <div class="post-card__media">
+        <img src={cover} alt={title} loading="lazy" decoding="async" />
+      </div>
+    )}
+    <div class="post-card__body">
+      <time class="post-card__date" datetime={date.toISOString()}>{fecha}</time>
+      <h3 class="post-card__title">{title}</h3>
+      <p class="post-card__desc">{description}</p>
+      {tags.length > 0 && (
+        <ul class="post-card__tags">
+          {tags.map((t) => <li>#{t}</li>)}
+        </ul>
+      )}
+      <span class="post-card__more">Leer más →</span>
+    </div>
+  </a>
+</article>

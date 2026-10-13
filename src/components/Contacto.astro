@@ -1,0 +1,129 @@
+---
+import { site } from '../data/site';
+
+const c = site.contacto;
+const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(c.mapsQuery)}&output=embed`;
+---
+
+<section class="contacto section" id="contacto" aria-labelledby="contacto-title">
+  <div class="container contacto__grid">
+    <div class="contacto__info" data-reveal>
+      <p class="eyebrow">Visítanos</p>
+      <h2 id="contacto-title">Agenda una visita a nuestra parcela sustentable</h2>
+      <ul class="contacto__list">
+        <li>
+          <span class="contacto__ico">📍</span>
+          <div>
+            <strong>Dirección</strong>
+            <p>{c.direccion}</p>
+            <p class="muted">{c.comuna}</p>
+          </div>
+        </li>
+        <li>
+          <span class="contacto__ico">✉️</span>
+          <div>
+            <strong>Correo</strong>
+            <a href={`mailto:${c.email}`}>{c.email}</a>
+          </div>
+        </li>
+        <li>
+          <span class="contacto__ico">💬</span>
+          <div>
+            <strong>WhatsApp</strong>
+            <a href={c.whatsappLink} target="_blank" rel="noopener noreferrer">{c.whatsapp}</a>
+          </div>
+        </li>
+        <li>
+          <span class="contacto__ico">📸</span>
+          <div>
+            <strong>Instagram</strong>
+            <a href={c.instagramUrl} target="_blank" rel="noopener noreferrer">@{c.instagram}</a>
+          </div>
+        </li>
+      </ul>
+      <div class="contacto__actions">
+        <a class="btn" href={c.whatsappLink} target="_blank" rel="noopener noreferrer">Chat de WhatsApp</a>
+        <a class="btn btn--ghost" href={c.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>
+      </div>
+    </div>
+
+    <div class="contacto__map" data-reveal style="--reveal-delay:120ms">
+      <iframe
+        title="Mapa de ubicación de Verderapia en Quilpué"
+        src={mapSrc}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contacto__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 6vw, 4.5rem);
+    align-items: center;
+  }
+  .contacto__info h2 {
+    margin: 0.7rem 0 1.8rem;
+  }
+  .contacto__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.3rem;
+    margin-bottom: 2rem;
+  }
+  .contacto__list li {
+    display: flex;
+    gap: 1rem;
+  }
+  .contacto__ico {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    font-size: 1.05rem;
+  }
+  .contacto__list strong {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+  .contacto__list a {
+    font-weight: 600;
+    color: var(--brand);
+  }
+  .contacto__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+  }
+  .contacto__map {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    min-height: 420px;
+  }
+  .contacto__map iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 420px;
+    border: 0;
+    filter: grayscale(0.15);
+  }
+  @media (max-width: 860px) {
+    .contacto__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

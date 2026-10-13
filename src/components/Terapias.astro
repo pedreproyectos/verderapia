@@ -1,0 +1,262 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  variant?: 'list' | 'cards' | 'accordion';
+  title?: string;
+  subtitle?: string;
+}
+
+const {
+  variant = 'list',
+  title = 'Terapias y masajes',
+  subtitle = 'Cada sesión está pensada para devolverte al equilibrio. Reserva tu hora por WhatsApp o correo.',
+} = Astro.props;
+const terapias = site.terapias;
+---
+
+<section class:list={['terapias', `terapias--${variant}`, 'section']} id="terapias" aria-labelledby="terapias-title">
+  <div class="container">
+    <header class="terapias__head" data-reveal>
+      <p class="eyebrow">Terapias</p>
+      <h2 id="terapias-title">{title}</h2>
+      <p class="lead">{subtitle}</p>
+    </header>
+
+    {variant === 'cards' && (
+      <div class="terapias__cards">
+        {terapias.map((t, i) => (
+          <article class="terapia-card" data-reveal style={`--reveal-delay:${(i % 3) * 90}ms`}>
+            <div class="terapia-card__top">
+              <h3>{t.nombre}</h3>
+              <span class="terapia-card__price">{t.precio}</span>
+            </div>
+            <p>{t.descripcion}</p>
+            <div class="terapia-card__foot">
+              <span class="terapia-card__dur">{t.duracion}</span>
+              {t.extra && <span class="terapia-card__extra">{t.extra}</span>}
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+    {variant === 'accordion' && (
+      <div class="terapias__accordion">
+        {terapias.map((t) => (
+          <details class="terapia-acc" data-reveal>
+            <summary>
+              <span class="terapia-acc__name">{t.nombre}</span>
+              <span class="terapia-acc__meta">
+                <span>{t.duracion}</span>
+                <span class="terapia-acc__price">{t.precio}</span>
+              </span>
+            </summary>
+            <div class="terapia-acc__body">
+              <p>{t.descripcion}</p>
+              {t.extra && <p class="muted">{t.extra}</p>}
+            </div>
+          </details>
+        ))}
+      </div>
+    )}
+
+    {variant === 'list' && (
+      <ul class="terapias__list">
+        {terapias.map((t) => (
+          <li class="terapia-row" data-reveal>
+            <div class="terapia-row__main">
+              <h3>{t.nombre}</h3>
+              <p>{t.descripcion}</p>
+              {t.extra && <p class="terapia-row__extra">{t.extra}</p>}
+            </div>
+            <div class="terapia-row__side">
+              <span class="terapia-row__price">{t.precio}</span>
+              <span class="terapia-row__dur">{t.duracion}</span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    <div class="terapias__cta">
+      <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Reservar por WhatsApp</a>
+      <a class="btn btn--ghost" href={`mailto:${site.contacto.email}`}>Escribir un correo</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .terapias__head {
+    max-width: 640px;
+    margin-bottom: clamp(2rem, 5vw, 3.2rem);
+  }
+  .terapias__head h2 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .terapias__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+
+  /* Lista */
+  .terapias__list {
+    border-top: 1px solid var(--line);
+  }
+  .terapia-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1.5rem 2.5rem;
+    align-items: baseline;
+    padding: clamp(1.3rem, 2.6vw, 2rem) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .terapia-row__main h3 {
+    font-size: 1.35rem;
+    margin-bottom: 0.35rem;
+  }
+  .terapia-row__main p {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+    max-width: 62ch;
+  }
+  .terapia-row__extra {
+    margin-top: 0.4rem;
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+  .terapia-row__side {
+    text-align: right;
+    white-space: nowrap;
+  }
+  .terapia-row__price {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--brand);
+  }
+  .terapia-row__dur {
+    font-size: 0.82rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Cards */
+  .terapias__cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: clamp(1rem, 2.4vw, 1.6rem);
+  }
+  .terapia-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    padding: clamp(1.4rem, 2.6vw, 1.9rem);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .terapia-card:hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in srgb, var(--brand) 50%, var(--line));
+    box-shadow: var(--shadow);
+  }
+  .terapia-card__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .terapia-card__top h3 {
+    font-size: 1.25rem;
+  }
+  .terapia-card__price {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--brand);
+    white-space: nowrap;
+  }
+  .terapia-card p {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+  }
+  .terapia-card__foot {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.82rem;
+  }
+  .terapia-card__dur {
+    color: var(--muted);
+  }
+  .terapia-card__extra {
+    color: var(--brand);
+    font-weight: 700;
+  }
+
+  /* Acordeón */
+  .terapias__accordion {
+    border-top: 1px solid var(--line);
+  }
+  .terapia-acc {
+    border-bottom: 1px solid var(--line);
+  }
+  .terapia-acc summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: clamp(1.1rem, 2.4vw, 1.6rem) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .terapia-acc summary::-webkit-details-marker {
+    display: none;
+  }
+  .terapia-acc__name {
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2vw, 1.5rem);
+  }
+  .terapia-acc__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .terapia-acc__price {
+    color: var(--brand);
+    font-weight: 700;
+  }
+  .terapia-acc__body {
+    padding: 0 0 clamp(1.2rem, 2.4vw, 1.8rem);
+    max-width: 68ch;
+    color: var(--ink-soft);
+  }
+  .terapia-acc[open] .terapia-acc__name {
+    color: var(--brand);
+  }
+  @media (max-width: 640px) {
+    .terapia-row {
+      grid-template-columns: 1fr;
+    }
+    .terapia-row__side {
+      text-align: left;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+    .terapia-acc__meta span:first-child {
+      display: none;
+    }
+  }
+</style>

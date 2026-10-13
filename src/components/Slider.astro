@@ -1,0 +1,174 @@
+---
+export type Slide = {
+  src: string;
+  alt?: string;
+  eyebrow?: string;
+  title?: string;
+  text?: string;
+};
+
+interface Props {
+  slides: Slide[];
+  variant?: 'fade' | 'slide' | 'kenburns' | 'stack';
+  autoplay?: number;
+  class?: string;
+  id?: string;
+  showCaptions?: boolean;
+  showDots?: boolean;
+  showArrows?: boolean;
+  priority?: boolean;
+}
+
+const {
+  slides,
+  variant = 'fade',
+  autoplay = 6000,
+  class: className = '',
+  id,
+  showCaptions = true,
+  showDots = true,
+  showArrows = true,
+  priority = false,
+} = Astro.props;
+
+const uid = id ?? `slider-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div
+  class:list={['slider', `slider--${variant}`, className]}
+  id={uid}
+  data-slider
+  data-autoplay={autoplay}
+  data-variant={variant}
+  tabindex="0"
+  role="region"
+  aria-roledescription="carrusel"
+  aria-label="Galería de imágenes de Verderapia"
+>
+  <div class="slider__viewport">
+    {slides.map((slide, i) => (
+      <figure
+        class:list={['slider__slide', i === 0 && 'is-active']}
+        data-slide
+        aria-hidden={i === 0 ? 'false' : 'true'}
+      >
+        <img
+          src={slide.src}
+          alt={slide.alt ?? 'Verderapia'}
+          loading={priority && i === 0 ? 'eager' : 'lazy'}
+          decoding="async"
+          fetchpriority={priority && i === 0 ? 'high' : 'auto'}
+        />
+        {showCaptions && (slide.title || slide.text) && (
+          <figcaption class="slider__caption">
+            {slide.eyebrow && <span class="slider__eyebrow">{slide.eyebrow}</span>}
+            {slide.title && <strong class="slider__title">{slide.title}</strong>}
+            {slide.text && <span class="slider__text">{slide.text}</span>}
+          </figcaption>
+        )}
+      </figure>
+    ))}
+  </div>
+
+  {showArrows && slides.length > 1 && (
+    <>
+      <button type="button" class="slider__arrow slider__arrow--prev" data-prev aria-label="Imagen anterior">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="slider__arrow slider__arrow--next" data-next aria-label="Imagen siguiente">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </>
+  )}
+
+  {showDots && slides.length > 1 && (
+    <div class="slider__dots" data-dots role="tablist" aria-label="Seleccionar imagen"></div>
+  )}
+</div>
+
+<script>
+  function initSliders() {
+    document.querySelectorAll<HTMLElement>('[data-slider]').forEach((root) => {
+      if (root.dataset.ready === '1') return;
+      root.dataset.ready = '1';
+
+      const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
+      const total = slides.length;
+      if (total === 0) return;
+
+      const dotsWrap = root.querySelector<HTMLElement>('[data-dots]');
+      const prev = root.querySelector<HTMLElement>('[data-prev]');
+      const next = root.querySelector<HTMLElement>('[data-next]');
+      const autoplay = parseInt(root.dataset.autoplay || '0', 10);
+      let index = Math.max(0, slides.findIndex((s) => s.classList.contains('is-active')));
+      let timer: ReturnType<typeof setInterval> | null = null;
+
+      const dots = slides.map((_, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'slider__dot';
+        b.setAttribute('role', 'tab');
+        b.setAttribute('aria-label', `Ir a la imagen ${i + 1} de ${total}`);
+        b.addEventListener('click', () => go(i));
+        dotsWrap?.appendChild(b);
+        return b;
+      });
+
+      function render() {
+        slides.forEach((s, i) => {
+          const active = i === index;
+          s.classList.toggle('is-active', active);
+          s.setAttribute('aria-hidden', active ? 'false' : 'true');
+        });
+        dots.forEach((d, i) => {
+          const active = i === index;
+          d.classList.toggle('is-active', active);
+          d.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        root.style.setProperty('--slider-index', String(index));
+        root.style.setProperty('--slider-progress', `${((index + 1) / total) * 100}%`);
+      }
+
+      function go(n: number) {
+        index = (n + total) % total;
+        render();
+        restart();
+      }
+      const nextSlide = () => go(index + 1);
+      const prevSlide = () => go(index - 1);
+
+      prev?.addEventListener('click', prevSlide);
+      next?.addEventListener('click', nextSlide);
+
+      function restart() {
+        if (autoplay > 0) {
+          if (timer) clearInterval(timer);
+          timer = setInterval(nextSlide, autoplay);
+        }
+      }
+
+      let startX: number | null = null;
+      root.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+      root.addEventListener('touchend', (e) => {
+        if (startX === null) return;
+        const dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 40) (dx < 0 ? nextSlide : prevSlide)();
+        startX = null;
+      }, { passive: true });
+
+      root.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') nextSlide();
+        if (e.key === 'ArrowLeft') prevSlide();
+      });
+
+      root.addEventListener('mouseenter', () => { if (timer) clearInterval(timer); });
+      root.addEventListener('mouseleave', restart);
+
+      render();
+      restart();
+    });
+  }
+
+  if (document.readyState !== 'loading') initSliders();
+  else document.addEventListener('DOMContentLoaded', initSliders);
+</script>

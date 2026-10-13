@@ -1,0 +1,162 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const fecha = new Intl.DateTimeFormat('es-CL', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(post.data.date);
+---
+
+<Base
+  tema={1}
+  title={`${post.data.title} — Verderapia`}
+  description={post.data.description}
+  image={post.data.cover}
+>
+  <SiteNav variant="solid" />
+  <main class="articulo">
+    <div class="container container--narrow">
+      <p class="articulo__back"><a href="/posts/">← Novedades</a></p>
+      <header class="articulo__head">
+        <time datetime={post.data.date.toISOString()}>{fecha}</time>
+        <h1>{post.data.title}</h1>
+        <p class="lead">{post.data.description}</p>
+        <p class="articulo__author">Por {post.data.author}</p>
+      </header>
+
+      {post.data.cover && (
+        <figure class="articulo__cover">
+          <img src={post.data.cover} alt={post.data.title} loading="eager" decoding="async" />
+        </figure>
+      )}
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      {post.data.tags.length > 0 && (
+        <ul class="articulo__tags">
+          {post.data.tags.map((t) => <li>#{t}</li>)}
+        </ul>
+      )}
+
+      <div class="articulo__cta">
+        <a class="btn" href="https://wa.me/56987548041" target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .articulo {
+    padding-block: clamp(7rem, 12vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .articulo__back {
+    margin-bottom: 1.6rem;
+    font-weight: 700;
+  }
+  .articulo__back a {
+    color: var(--brand);
+  }
+  .articulo__head {
+    margin-bottom: 2rem;
+  }
+  .articulo__head time {
+    display: inline-block;
+    margin-bottom: 0.8rem;
+    font-size: 0.74rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brand-2);
+  }
+  .articulo__head h1 {
+    margin-bottom: 1rem;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+  }
+  .articulo__author {
+    margin-top: 0.8rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .articulo__cover {
+    margin: 0 0 2.4rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .articulo__cover img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+  .articulo__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .articulo__cta {
+    margin-top: 2.4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Prosa del markdown */
+  .prose {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+  }
+  .prose :global(h2) {
+    margin: 2.2rem 0 0.9rem;
+    font-size: 1.7rem;
+    color: var(--ink);
+  }
+  .prose :global(h3) {
+    margin: 1.8rem 0 0.7rem;
+    color: var(--ink);
+  }
+  .prose :global(p) {
+    margin-bottom: 1.1rem;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.3rem 1.2rem;
+    padding-left: 1.1rem;
+    list-style: disc;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.4rem;
+  }
+  .prose :global(strong) {
+    color: var(--ink);
+  }
+  .prose :global(a) {
+    color: var(--brand);
+    text-decoration: underline;
+  }
+  .prose :global(img) {
+    border-radius: var(--radius);
+    margin-block: 1.5rem;
+  }
+  .prose :global(em) {
+    color: var(--muted);
+  }
+</style>

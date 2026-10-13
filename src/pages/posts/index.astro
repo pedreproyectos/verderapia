@@ -1,0 +1,49 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import PostCard from '../../components/PostCard.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('posts'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base tema={1} title="Novedades — Verderapia" description="Mensajes semanales, talleres, terapias y novedades de Verderapia.">
+  <SiteNav variant="solid" />
+  <main class="listado">
+    <div class="container">
+      <header class="listado__head">
+        <p class="eyebrow">Blog</p>
+        <h1>Novedades y talleres</h1>
+        <p class="lead">Mensajes semanales, talleres, terapias y todo lo que pasa en nuestra parcela.</p>
+      </header>
+      <div class="posts__grid">
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+      <p class="listado__back"><a href="/tema1/">← Volver al inicio</a></p>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .listado {
+    padding-block: clamp(7rem, 12vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .listado__head {
+    max-width: 640px;
+    margin-bottom: clamp(2rem, 5vw, 3.2rem);
+  }
+  .listado__head h1 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .listado__back {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+  }
+  .listado__back a {
+    color: var(--brand);
+  }
+</style>

@@ -1,0 +1,246 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  variant?: 'transparent' | 'solid' | 'glass';
+  links?: { label: string; href: string }[];
+  cta?: { label: string; href: string };
+}
+
+const {
+  variant = 'transparent',
+  links = [
+    { label: 'Verde', href: '#verde' },
+    { label: 'Arte', href: '#arte' },
+    { label: 'Terapia', href: '#terapia' },
+    { label: 'Novedades', href: '#novedades' },
+    { label: 'Instagram', href: '#instagram' },
+    { label: 'Contacto', href: '#contacto' },
+  ],
+  cta = { label: 'Agenda tu hora', href: site.contacto.whatsappLink },
+} = Astro.props;
+---
+
+<header class:list={['nav', `nav--${variant}`]} data-nav>
+  <div class="nav__inner container">
+    <a class="nav__brand" href="/" aria-label="Verderapia — inicio">
+      <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true">
+        <path d="M32 52c0-13 6-21 19-25-2 15-9 22-19 25Z" fill="var(--brand-2)"/>
+        <path d="M32 52C19 48 12 40 10 25c13 4 20 13 22 27Z" fill="var(--accent)"/>
+        <path d="M32 52V33" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
+      </svg>
+      <span class="nav__name">{site.nombre}</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Secciones">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+
+    <div class="nav__actions">
+      <a class="btn nav__cta" href={cta.href} target="_blank" rel="noopener noreferrer">
+        {cta.label}
+      </a>
+      <button class="nav__toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  if (nav) {
+    const toggle = nav.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+    toggle?.addEventListener('click', () => {
+      const open = nav.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('.nav__links a').forEach((a) =>
+      a.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        toggle?.setAttribute('aria-expanded', 'false');
+      })
+    );
+
+    if (nav.classList.contains('nav--transparent')) {
+      const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 60);
+      onScroll();
+      window.addEventListener('scroll', onScroll, { passive: true });
+    }
+  }
+</script>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    transition: background 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease, color 0.4s ease;
+  }
+  .nav__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-block: 1.05rem;
+  }
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .nav__logo {
+    width: 30px;
+    height: 30px;
+    color: var(--ink);
+  }
+  .nav__links {
+    display: flex;
+    gap: 1.6rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+  .nav__links a {
+    position: relative;
+    padding-block: 0.3rem;
+    opacity: 0.9;
+    transition: opacity 0.25s ease;
+  }
+  .nav__links a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+  .nav__links a:hover {
+    opacity: 1;
+  }
+  .nav__links a:hover::after {
+    transform: scaleX(1);
+  }
+  .nav__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .nav__cta {
+    padding: 0.7em 1.3em;
+    font-size: 0.88rem;
+  }
+  .nav__toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+  }
+  .nav__toggle span {
+    width: 18px;
+    height: 2px;
+    background: currentColor;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .nav.is-open .nav__toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .nav.is-open .nav__toggle span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav.is-open .nav__toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Variante transparente (sobre el hero) */
+  .nav--transparent {
+    color: #fff;
+  }
+  .nav--transparent .nav__cta {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    box-shadow: none;
+  }
+  .nav--transparent.is-scrolled {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px -24px rgba(0, 0, 0, 0.6);
+  }
+  .nav--transparent.is-scrolled .nav__cta {
+    background: var(--brand);
+    color: var(--btn-ink);
+    border-color: transparent;
+  }
+
+  /* Variante glass */
+  .nav--glass {
+    color: var(--ink);
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Variante sólida */
+  .nav--solid {
+    color: var(--ink);
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+
+  @media (max-width: 900px) {
+    .nav__links {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      gap: 0;
+      padding: 0.5rem 4vw 1.4rem;
+      background: var(--bg);
+      color: var(--ink);
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      transform: translateY(-12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .nav.is-open .nav__links {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+    .nav__links a {
+      padding-block: 0.9rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .nav__toggle {
+      display: flex;
+    }
+    .nav--transparent.is-scrolled,
+    .nav--transparent {
+      color: #fff;
+    }
+    .nav--transparent:not(.is-scrolled) .nav__toggle {
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+</style>

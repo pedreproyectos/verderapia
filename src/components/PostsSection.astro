@@ -1,0 +1,38 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from './PostCard.astro';
+
+interface Props {
+  limit?: number;
+  title?: string;
+  subtitle?: string;
+  class?: string;
+}
+
+const {
+  limit = 3,
+  title = 'Novedades y talleres',
+  subtitle = 'Mensajes semanales, talleres y todo lo que pasa en Verderapia.',
+  class: className = '',
+} = Astro.props;
+
+const posts = (await getCollection('posts'))
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, limit);
+---
+
+<section class:list={['posts', className]} id="novedades" aria-labelledby="novedades-title">
+  <header class="posts__head">
+    <h2 id="novedades-title">{title}</h2>
+    <p class="posts__subtitle">{subtitle}</p>
+  </header>
+
+  <div class="posts__grid">
+    {posts.map((post) => <PostCard post={post} />)}
+  </div>
+
+  <div class="posts__cta">
+    <a class="btn" href="/posts/">Ver todas las novedades</a>
+  </div>
+</section>

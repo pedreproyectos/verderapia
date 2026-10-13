@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
+import instagramConfig from '../data/instagram.json';
+
+interface Props {
+  limit?: number;
+  title?: string;
+  subtitle?: string;
+  class?: string;
+  /** Si se entrega, se muestra un embed externo (LightWidget, EmbedSocial, Behold, etc.) */
+  embedSrc?: string;
+}
+
+const {
+  limit = 8,
+  title = 'Síguenos en Instagram',
+  subtitle = 'Mensajes semanales, talleres, terapias y la vida en nuestra parcela.',
+  class: className = '',
+  embedSrc,
+} = Astro.props;
+
+// El embed puede venir por prop o desde la configuración editable en /admin
+const embed = embedSrc ?? instagramConfig.embed_src ?? '';
+const username = instagramConfig.username || site.contacto.instagram;
+const profileUrl = instagramConfig.profile_url || site.contacto.instagramUrl;
+
+const posts = (await getCollection('instagram'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, limit);
+---
+
+<section class:list={['instagram', className]} id="instagram" aria-labelledby="instagram-title">
+  <header class="instagram__head">
+    <p class="instagram__eyebrow">
+      <svg viewBox="0 0 24 24" aria-hidden="true" class="instagram__icon"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.3 1-.4 2.1C2.7 9.8 2.7 10.2 2.7 12s0 2.2.1 3.4c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.4.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-3.4s0-2.2-.1-3.4c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8Zm0 1.8a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2Zm5.2-2.4a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z"/></svg>
+      @{username}
+    </p>
+    <h2 id="instagram-title">{title}</h2>
+    <p class="instagram__subtitle">{subtitle}</p>
+  </header>
+
+  {embed ? (
+    <div class="instagram__embed">
+      <iframe src={embed} title="Feed de Instagram de Verderapia" loading="lazy" allowtransparency="true"></iframe>
+    </div>
+  ) : (
+    <div class="instagram__grid">
+      {posts.map((post) => (
+        <a
+          class="instagram__card"
+          href={post.data.permalink}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Ver publicación en Instagram: ${post.data.caption.slice(0, 60)}`}
+        >
+          <img src={post.data.image} alt="" loading="lazy" decoding="async" />
+          <span class="instagram__overlay">
+            <span class="instagram__caption">{post.data.caption}</span>
+            <span class="instagram__meta">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-6.7-4.3-9.3-8.1C.8 10 2 6.3 5.2 5.2 7.2 4.5 9.2 5.2 12 8c2.8-2.8 4.8-3.5 6.8-2.8C22 6.3 23.2 10 21.3 12.9 18.7 16.7 12 21 12 21Z"/></svg>
+              {post.data.likes}
+            </span>
+          </span>
+        </a>
+      ))}
+    </div>
+  )}
+
+  <div class="instagram__cta">
+    <a class="btn btn--instagram" href={profileUrl} target="_blank" rel="noopener noreferrer">
+      Visita nuestra cuenta
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+  </div>
+</section>

@@ -1,0 +1,113 @@
+---
+import { site } from '../data/site';
+import { galeria } from '../data/images';
+
+const img = galeria.hero[3];
+---
+
+<section class="gift section" id="giftcard" aria-labelledby="gift-title">
+  <div class="container">
+    <div class="gift__card" data-reveal>
+      <img class="gift__bg" src={img} alt="" aria-hidden="true" loading="lazy" decoding="async" />
+      <div class="gift__content">
+        <p class="eyebrow">{site.giftCard.titulo}</p>
+        <h2 id="gift-title">{site.descuentos.titulo}</h2>
+        <p class="lead">{site.descuentos.adicional}</p>
+        <ul class="gift__promos">
+          {site.promos.map((p) => (
+            <li>
+              <strong>{p.titulo}</strong>
+              <span>{p.detalle}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="gift__actions">
+          <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Pedir mi Gift Card</a>
+          <a class="btn btn--ghost gift__ghost" href={`mailto:${site.contacto.email}`}>{site.contacto.email}</a>
+        </div>
+        <p class="gift__nota">{site.descuentos.nota}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .gift__card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    padding: clamp(2rem, 6vw, 5rem);
+    color: #fff;
+    isolation: isolate;
+  }
+  .gift__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+  .gift__card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(120deg, rgba(12, 26, 18, 0.92), rgba(12, 26, 18, 0.55));
+  }
+  [data-tema='2'] .gift__card::after {
+    background: linear-gradient(120deg, rgba(20, 20, 20, 0.9), rgba(20, 20, 20, 0.45));
+  }
+  .gift__content {
+    max-width: 640px;
+  }
+  .gift__card .eyebrow {
+    color: var(--accent);
+  }
+  .gift__card h2 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .gift__promos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin: 1.8rem 0;
+  }
+  .gift__promos li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(6px);
+  }
+  .gift__promos strong {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+  .gift__promos span {
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+  .gift__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+  }
+  .gift__card .btn {
+    background: var(--accent);
+    color: #12210f;
+  }
+  .gift__ghost {
+    background: transparent !important;
+    color: #fff !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+  }
+  .gift__nota {
+    margin-top: 1.2rem;
+    font-size: 0.78rem;
+    opacity: 0.7;
+  }
+</style>
