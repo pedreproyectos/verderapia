@@ -65,7 +65,7 @@ const ticker = [
         <Slider slides={slides} variant="slide" autoplay={5500} showCaptions={false} priority />
         <p class="ehero__caption">
           <span>Retratos de la parcela</span>
-          <span>01 / 04</span>
+          <span>01 / {String(slides.length).padStart(2, '0')}</span>
         </p>
       </div>
     </div>

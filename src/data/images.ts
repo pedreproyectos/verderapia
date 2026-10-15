@@ -729,7 +729,7 @@ export const images = {
 const pick = (arr: string[], idx: number[]) => idx.map((i) => arr[i % arr.length]);
 
 export const galeria = {
-  hero: pick(images.landscape, [0, 24, 60, 110, 160, 210]),
+  hero: pick(images.landscape, [0, 24, 60, 110, 160, 210, 90, 130, 190, 240]),
   verde: pick(images.landscape, [5, 40, 75, 130, 185, 230]),
   arte: pick(images.landscape, [12, 50, 95, 145, 200, 240]),
   terapia: pick(images.landscape, [18, 66, 100, 150, 205, 245]),

@@ -23,16 +23,18 @@ const posts = (await getCollection('posts'))
 ---
 
 <section class:list={['posts', className]} id="novedades" aria-labelledby="novedades-title">
-  <header class="posts__head">
-    <h2 id="novedades-title">{title}</h2>
-    <p class="posts__subtitle">{subtitle}</p>
-  </header>
+  <div class="container">
+    <header class="posts__head">
+      <h2 id="novedades-title">{title}</h2>
+      <p class="posts__subtitle">{subtitle}</p>
+    </header>
 
-  <div class="posts__grid">
-    {posts.map((post) => <PostCard post={post} />)}
-  </div>
+    <div class="posts__grid">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
 
-  <div class="posts__cta">
-    <a class="btn" href="/posts/">Ver todas las novedades</a>
+    <div class="posts__cta">
+      <a class="btn" href="/posts/">Ver todas las novedades</a>
+    </div>
   </div>
 </section>
