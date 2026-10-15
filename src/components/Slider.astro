@@ -103,6 +103,18 @@ const uid = id ?? `slider-${Math.random().toString(36).slice(2, 8)}`;
       let index = Math.max(0, slides.findIndex((s) => s.classList.contains('is-active')));
       let timer: ReturnType<typeof setInterval> | null = null;
 
+      // Con loading="lazy" el navegador no descarga las imágenes que están fuera de
+      // pantalla, así que al deslizar el siguiente slide aparecía en blanco. Una vez
+      // que la página terminó de cargar, forzamos su descarga en segundo plano.
+      const preloadSlides = () => {
+        slides.forEach((slide) => {
+          const img = slide.querySelector<HTMLImageElement>('img');
+          if (img && !img.complete) img.loading = 'eager';
+        });
+      };
+      if (document.readyState === 'complete') preloadSlides();
+      else window.addEventListener('load', preloadSlides, { once: true });
+
       const dots = slides.map((_, i) => {
         const b = document.createElement('button');
         b.type = 'button';
