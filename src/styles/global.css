@@ -372,6 +372,7 @@ p {
 /* Variante deslizante */
 .slider--slide .slider__viewport {
   display: flex;
+  overflow: visible; /* el recorte lo hace .slider; si el viewport recorta, los slides desaparecen al trasladarlo */
   transition: transform 0.7s cubic-bezier(0.65, 0.05, 0.36, 1);
   transform: translateX(calc(var(--slider-index) * -100%));
 }

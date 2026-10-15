@@ -55,9 +55,9 @@ const uid = id ?? `slider-${Math.random().toString(36).slice(2, 8)}`;
         <img
           src={slide.src}
           alt={slide.alt ?? 'Verderapia'}
-          loading={priority && i === 0 ? 'eager' : 'lazy'}
+          loading={priority ? 'eager' : 'lazy'}
           decoding="async"
-          fetchpriority={priority && i === 0 ? 'high' : 'auto'}
+          fetchpriority={priority && i === 0 ? 'high' : 'low'}
         />
         {showCaptions && (slide.title || slide.text) && (
           <figcaption class="slider__caption">
@@ -104,12 +104,19 @@ const uid = id ?? `slider-${Math.random().toString(36).slice(2, 8)}`;
       let timer: ReturnType<typeof setInterval> | null = null;
 
       // Con loading="lazy" el navegador no descarga las imágenes que están fuera de
-      // pantalla, así que al deslizar el siguiente slide aparecía en blanco. Una vez
-      // que la página terminó de cargar, forzamos su descarga en segundo plano.
+      // pantalla, así que al deslizar el siguiente slide aparecía en blanco. Forzamos
+      // su descarga en segundo plano (el new Image funciona en todos los navegadores).
       const preloadSlides = () => {
         slides.forEach((slide) => {
           const img = slide.querySelector<HTMLImageElement>('img');
-          if (img && !img.complete) img.loading = 'eager';
+          if (!img || img.complete) return;
+          img.loading = 'eager';
+          const src = img.getAttribute('src');
+          if (src) {
+            const pre = new Image();
+            pre.decoding = 'async';
+            pre.src = src;
+          }
         });
       };
       if (document.readyState === 'complete') preloadSlides();
