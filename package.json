@@ -18,7 +18,7 @@
     "astro": "^7.3.6",
     "tailwindcss": "^4.3.3"
   },
-  "allowScripts": {
-    "esbuild": true
+  "devDependencies": {
+    "wrangler": "^4.150.0"
   }
 }

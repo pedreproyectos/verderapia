@@ -1,0 +1,9 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "verderapia",
+  "compatibility_date": "2026-10-14",
+  // Sitio estático de Astro: se publica la carpeta generada por `astro build`.
+  "assets": {
+    "directory": "./dist",
+  },
+}
