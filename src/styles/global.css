@@ -129,70 +129,6 @@ p {
 }
 
 /* =========================================================
-   TEMA 2 — "Editorial" (minimal claro)
-   ========================================================= */
-[data-tema='2'] {
-  --bg: #ffffff;
-  --bg-2: #f4f1ea;
-  --surface: #ffffff;
-  --surface-2: #f4f1ea;
-  --ink: #141414;
-  --ink-soft: #3b3b3b;
-  --muted: #8b8b8b;
-  --brand: #7f9070;
-  --brand-2: #a9b79a;
-  --accent: #d8c3a5;
-  --accent-2: #b98e5a;
-  --line: #e7e3d9;
-  --radius: 3px;
-  --radius-lg: 4px;
-  --shadow: 0 24px 60px -40px rgba(0, 0, 0, 0.5);
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Space Grotesk', system-ui, sans-serif;
-  --btn-ink: #ffffff;
-  --overlay: linear-gradient(180deg, rgba(20, 20, 20, 0) 40%, rgba(20, 20, 20, 0.65) 100%);
-  --maxw: 1240px;
-}
-[data-tema='2'] h1,
-[data-tema='2'] h2 {
-  font-family: 'Fraunces', Georgia, serif;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
-/* =========================================================
-   TEMA 3 — "Noche verde" (moderno oscuro)
-   ========================================================= */
-[data-tema='3'] {
-  --bg: #0b120f;
-  --bg-2: #101b15;
-  --surface: rgba(255, 255, 255, 0.045);
-  --surface-2: rgba(255, 255, 255, 0.08);
-  --ink: #eaf6ef;
-  --ink-soft: #b7d2c5;
-  --muted: #7ea08f;
-  --brand: #35e0a1;
-  --brand-2: #1fb98a;
-  --accent: #d9ff6b;
-  --accent-2: #7af5c8;
-  --line: rgba(255, 255, 255, 0.12);
-  --radius: 18px;
-  --radius-lg: 26px;
-  --shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.75);
-  --font-display: 'Sora', system-ui, sans-serif;
-  --font-body: 'Sora', system-ui, sans-serif;
-  --btn-ink: #04120c;
-  --overlay: linear-gradient(180deg, rgba(11, 18, 15, 0.05) 0%, rgba(11, 18, 15, 0.82) 100%);
-  --maxw: 1220px;
-}
-[data-tema='3'] body {
-  background-image:
-    radial-gradient(60vw 60vw at 85% -10%, rgba(53, 224, 161, 0.14), transparent 60%),
-    radial-gradient(50vw 50vw at 0% 40%, rgba(217, 255, 107, 0.06), transparent 55%);
-  background-attachment: fixed;
-}
-
-/* =========================================================
    Layout y utilidades
    ========================================================= */
 .container {
@@ -220,9 +156,6 @@ p {
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--brand-2);
-}
-[data-tema='3'] .eyebrow {
-  color: var(--brand);
 }
 .lead {
   font-size: clamp(1.05rem, 1.6vw, 1.3rem);
@@ -261,11 +194,6 @@ p {
 .btn svg {
   width: 1.05em;
   height: 1.05em;
-}
-[data-tema='2'] .btn {
-  border-radius: 0;
-  box-shadow: none;
-  padding: 1em 2em;
 }
 .btn--ghost {
   background: transparent;
@@ -471,9 +399,6 @@ p {
   width: 26px;
   background: #fff;
 }
-[data-tema='3'] .slider__dot.is-active {
-  background: var(--brand);
-}
 [data-tema='1'] .slider__dot.is-active {
   background: var(--accent-2);
 }
@@ -518,9 +443,6 @@ p {
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--surface-2);
-}
-[data-tema='2'] .instagram__card {
-  border-radius: 0;
 }
 .instagram__card img {
   width: 100%;
