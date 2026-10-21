@@ -14,30 +14,52 @@ import Contacto from '../../components/Contacto.astro';
 import Footer from '../../components/Footer.astro';
 import { site } from '../../data/site';
 import { galeria } from '../../data/images';
+import { getCtas } from '../../data/ctas';
 
 const slides = galeria.hero.map((src, i) => ({
   src,
   alt: `Verderapia — parcela sustentable ${i + 1}`,
 }));
+
+const ctas = await getCtas();
+const mainCta = ctas[0];
+const secondaryCtas = ctas.slice(1);
 ---
 
 <Base tema={1}>
-  <SiteNav variant="solid" />
+  <SiteNav variant="transparent" />
 
   <!-- HERO -->
   <section class="hero" aria-label="Bienvenida">
-    <div class="container hero__grid">
-      <div class="hero__content">
+    <div class="hero__slider">
+      <Slider slides={slides} variant="kenburns" autoplay={7000} showCaptions={false} priority />
+    </div>
+    <div class="hero__overlay">
+      <div class="container hero__content">
         <p class="hero__kicker">{site.heroKicker}</p>
         <h1 class="hero__title">{site.heroTitulo}</h1>
-        <p class="hero__text">{site.historia}</p>
         <div class="hero__actions">
-          <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Agenda tu terapia</a>
-          <a class="btn hero__ghost" href="#verde">Conoce la parcela</a>
+          {mainCta && (
+            <a
+              class="btn"
+              href={mainCta.href}
+              target={mainCta.external ? '_blank' : undefined}
+              rel={mainCta.external ? 'noopener noreferrer' : undefined}
+            >
+              {mainCta.label}
+            </a>
+          )}
+          {secondaryCtas.map((cta) => (
+            <a
+              class="btn hero__ghost"
+              href={cta.href}
+              target={cta.external ? '_blank' : undefined}
+              rel={cta.external ? 'noopener noreferrer' : undefined}
+            >
+              {cta.label}
+            </a>
+          ))}
         </div>
-      </div>
-      <div class="hero__media">
-        <Slider slides={slides} variant="kenburns" autoplay={7000} showCaptions={false} priority />
       </div>
     </div>
   </section>
@@ -74,72 +96,101 @@ const slides = galeria.hero.map((src, i) => ({
 
 <style>
   .hero {
-    padding-top: clamp(7rem, 11vw, 9rem);
-    padding-bottom: clamp(3.5rem, 6vw, 5.5rem);
-  }
-  .hero__grid {
+    position: relative;
     display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: clamp(2rem, 5vw, 4.5rem);
-    align-items: center;
+    align-items: end;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+  .hero__slider {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .hero__slider :global(.slider) {
+    height: 100%;
+    border-radius: 0;
+  }
+  .hero__overlay {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    align-self: stretch;
+    width: 100%;
+    min-height: 100%;
+    padding-top: clamp(9rem, 22vh, 16rem);
+    padding-bottom: clamp(1.6rem, 3.5vh, 2.8rem);
+    pointer-events: none;
+    background: linear-gradient(
+      180deg,
+      rgba(20, 34, 24, 0.5) 0%,
+      rgba(20, 34, 24, 0.08) 30%,
+      rgba(20, 34, 24, 0.06) 48%,
+      rgba(20, 34, 24, 0.62) 80%,
+      rgba(20, 34, 24, 0.9) 100%
+    );
   }
   .hero__content {
-    max-width: 600px;
+    max-width: 940px;
+    color: #fff;
   }
   .hero__kicker {
     display: inline-block;
     padding: 0.5em 1.1em;
-    border: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, 0.42);
     border-radius: 999px;
-    color: var(--brand);
-    background: var(--surface);
     font-size: 0.75rem;
-    font-weight: 700;
     letter-spacing: 0.22em;
     text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(6px);
   }
   .hero__title {
-    margin: 1.4rem 0 1.2rem;
-    font-size: clamp(2.6rem, 5.6vw, 4.9rem);
-    line-height: 0.98;
-    color: var(--ink);
+    margin: 1.2rem 0 1rem;
+    font-size: clamp(2.4rem, 5.2vw, 4.3rem);
+    line-height: 1.02;
+    text-wrap: balance;
+    text-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
   }
-  .hero__text {
-    max-width: 52ch;
-    font-size: clamp(1rem, 1.4vw, 1.12rem);
-    color: var(--ink-soft);
-  }
+  /* El CTA vive en su propia fila al pie del hero, para tapar lo mínimo de la imagen */
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.9rem;
-    margin-top: 2rem;
+    margin-top: clamp(1.2rem, 3vh, 2.2rem);
+    pointer-events: auto;
   }
   .hero__ghost {
-    background: transparent;
-    border-color: var(--line);
-    color: var(--ink);
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
     box-shadow: none;
   }
   .hero__ghost:hover {
-    background: var(--surface-2);
+    background: rgba(255, 255, 255, 0.22);
   }
-  .hero__media {
-    position: relative;
-  }
-  .hero__media :global(.slider) {
-    aspect-ratio: 4 / 5;
-    height: auto;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
+  .hero :global(.slider__dots) {
+    left: auto;
+    right: clamp(1rem, 4vw, 3rem);
+    bottom: clamp(1.5rem, 4vh, 2.4rem);
+    transform: none;
   }
   @media (max-width: 900px) {
-    .hero__grid {
-      grid-template-columns: 1fr;
-      gap: clamp(2rem, 6vw, 3rem);
+    .hero__overlay {
+      padding-top: clamp(7rem, 18vh, 10rem);
+      padding-bottom: clamp(2.2rem, 5vh, 3rem);
     }
-    .hero__media :global(.slider) {
-      aspect-ratio: 4 / 3;
+    .hero__title {
+      font-size: clamp(2.1rem, 8.5vw, 3rem);
+    }
+    .hero :global(.slider__dots) {
+      left: auto;
+      right: 1.2rem;
+      top: 5.4rem;
+      bottom: auto;
+      transform: none;
     }
   }
 

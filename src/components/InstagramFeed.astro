@@ -20,7 +20,7 @@ const {
   embedSrc,
 } = Astro.props;
 
-// El embed puede venir por prop o desde la configuración editable en /admin
+// El embed puede venir por prop o desde la configuración editable en /keystatic
 const embed = embedSrc ?? instagramConfig.embed_src ?? '';
 const username = instagramConfig.username || site.contacto.instagram;
 const profileUrl = instagramConfig.profile_url || site.contacto.instagramUrl;

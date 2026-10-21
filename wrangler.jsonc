@@ -1,9 +1,13 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "verderapia",
+  "name": "verde",
   "compatibility_date": "2026-10-14",
-  // Sitio estático de Astro: se publica la carpeta generada por `astro build`.
+  "compatibility_flags": ["nodejs_compat"],
+  // Adaptador de Cloudflare: worker para las rutas de Keystatic y el sitio.
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  // Archivos estáticos generados por `astro build`.
   "assets": {
     "directory": "./dist",
-  },
+    "binding": "ASSETS"
+  }
 }

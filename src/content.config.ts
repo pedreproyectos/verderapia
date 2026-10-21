@@ -1,9 +1,9 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-/** Entradas de blog / novedades. Editables desde /admin (Decap/Sveltia CMS). */
+/** Entradas de blog / novedades. Editables desde /keystatic (Keystatic CMS). */
 const posts = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
+  loader: glob({ pattern: '**/*.mdoc', base: './src/content/posts' }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
@@ -18,8 +18,10 @@ const posts = defineCollection({
 
 /** Posts que se muestran en el feed de Instagram del sitio. */
 const instagram = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/instagram' }),
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/instagram' }),
   schema: z.object({
+    // Solo se usa para nombrar el archivo en el CMS.
+    title: z.string().optional(),
     caption: z.string(),
     image: z.string(),
     permalink: z.string().default('https://www.instagram.com/verderapia/'),
@@ -29,4 +31,20 @@ const instagram = defineCollection({
   }),
 });
 
-export const collections = { posts, instagram };
+/**
+ * Call to actions del sitio. Editables desde Keystatic (/keystatic).
+ * Uno puede marcarse como `principal` (aparece arriba); el resto se
+ * ordena con `order`.
+ */
+const ctas = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/ctas' }),
+  schema: z.object({
+    label: z.string(),
+    href: z.string(),
+    principal: z.boolean().default(false),
+    order: z.number().default(0),
+    external: z.boolean().default(true),
+  }),
+});
+
+export const collections = { posts, instagram, ctas };

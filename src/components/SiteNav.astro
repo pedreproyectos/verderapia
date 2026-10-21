@@ -1,10 +1,11 @@
 ---
 import { site } from '../data/site';
+import { getMainCta } from '../data/ctas';
 
 interface Props {
   variant?: 'transparent' | 'solid' | 'glass';
   links?: { label: string; href: string }[];
-  cta?: { label: string; href: string };
+  cta?: { label: string; href: string; external?: boolean };
 }
 
 const {
@@ -17,8 +18,13 @@ const {
     { label: 'Instagram', href: '#instagram' },
     { label: 'Contacto', href: '#contacto' },
   ],
-  cta = { label: 'Agenda tu hora', href: site.contacto.whatsappLink },
+  cta,
 } = Astro.props;
+
+const mainCta = await getMainCta();
+const navCta = cta ?? (mainCta
+  ? { label: mainCta.label, href: mainCta.href, external: mainCta.external }
+  : { label: 'Agenda tu hora', href: site.contacto.whatsappLink, external: true });
 ---
 
 <header class:list={['nav', `nav--${variant}`]} data-nav>
@@ -37,8 +43,13 @@ const {
     </nav>
 
     <div class="nav__actions">
-      <a class="btn nav__cta" href={cta.href} target="_blank" rel="noopener noreferrer">
-        {cta.label}
+      <a
+        class="btn nav__cta"
+        href={navCta.href}
+        target={navCta.external ? '_blank' : undefined}
+        rel={navCta.external ? 'noopener noreferrer' : undefined}
+      >
+        {navCta.label}
       </a>
       <button class="nav__toggle" type="button" data-nav-toggle aria-expanded="false" aria-label="Abrir menú">
         <span></span><span></span><span></span>
@@ -234,7 +245,6 @@ const {
     .nav__toggle {
       display: flex;
     }
-    .nav--transparent.is-scrolled,
     .nav--transparent {
       color: #fff;
     }
