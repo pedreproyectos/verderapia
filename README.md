@@ -44,7 +44,8 @@ external: true
 
 - **Novedades / blog**: `src/content/posts/*.mdoc` (Markdoc). Se ven en `/posts`
   y en la sección Novedades de la home.
-- **Feed de Instagram**: `src/content/instagram/*.yaml`.
+- **Feed de Instagram**: embed oficial de la cuenta en `src/data/instagram.json`
+  (`embed_src`). Se actualiza automáticamente con las publicaciones reales.
 - **Call to actions**: `src/content/ctas/*.yaml`.
 - **Datos del negocio**: `src/data/site.ts` (textos fijos que no están en el CMS).
 

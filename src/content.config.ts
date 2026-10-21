@@ -16,23 +16,7 @@ const posts = defineCollection({
   }),
 });
 
-/** Posts que se muestran en el feed de Instagram del sitio. */
-const instagram = defineCollection({
-  loader: glob({ pattern: '**/*.yaml', base: './src/content/instagram' }),
-  schema: z.object({
-    // Solo se usa para nombrar el archivo en el CMS.
-    title: z.string().optional(),
-    caption: z.string(),
-    image: z.string(),
-    permalink: z.string().default('https://www.instagram.com/verderapia/'),
-    date: z.coerce.date(),
-    likes: z.number().default(0),
-    order: z.number().default(0),
-  }),
-});
-
-/**
- * Call to actions del sitio. Editables desde Keystatic (/keystatic).
+/** Call to actions del sitio. Editables desde Keystatic (/keystatic).
  * Uno puede marcarse como `principal` (aparece arriba); el resto se
  * ordena con `order`.
  */
@@ -47,4 +31,4 @@ const ctas = defineCollection({
   }),
 });
 
-export const collections = { posts, instagram, ctas };
+export const collections = { posts, ctas };

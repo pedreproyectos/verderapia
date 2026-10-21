@@ -51,30 +51,6 @@ export default config({
       },
     }),
 
-    instagram: collection({
-      label: 'Feed de Instagram',
-      path: 'src/content/instagram/*',
-      format: { data: 'yaml' },
-      slugField: 'title',
-      columns: ['order', 'date'],
-      schema: {
-        title: fields.slug({ name: { label: 'Identificador' } }),
-        caption: fields.text({ label: 'Texto del post', multiline: true }),
-        image: fields.image({
-          label: 'Imagen',
-          directory: 'public/images/uploads',
-          publicPath: '/images/uploads/',
-        }),
-        permalink: fields.text({
-          label: 'Enlace al post',
-          defaultValue: 'https://www.instagram.com/verderapia/',
-        }),
-        date: fields.date({ label: 'Fecha' }),
-        likes: fields.integer({ label: 'Me gusta', defaultValue: 0 }),
-        order: fields.integer({ label: 'Orden en el feed', defaultValue: 0 }),
-      },
-    }),
-
     ctas: collection({
       label: 'Call to actions',
       path: 'src/content/ctas/*',

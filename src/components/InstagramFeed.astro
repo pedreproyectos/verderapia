@@ -1,10 +1,8 @@
 ---
-import { getCollection } from 'astro:content';
 import { site } from '../data/site';
 import instagramConfig from '../data/instagram.json';
 
 interface Props {
-  limit?: number;
   title?: string;
   subtitle?: string;
   class?: string;
@@ -13,21 +11,17 @@ interface Props {
 }
 
 const {
-  limit = 8,
   title = 'Síguenos en Instagram',
   subtitle = 'Mensajes semanales, talleres, terapias y la vida en nuestra parcela.',
   class: className = '',
   embedSrc,
 } = Astro.props;
 
-// El embed puede venir por prop o desde la configuración editable en /keystatic
+// Feed oficial de Instagram de la cuenta: se actualiza solo con las publicaciones reales.
+// El embed puede venir por prop o desde la configuración editable en /keystatic.
 const embed = embedSrc ?? instagramConfig.embed_src ?? '';
 const username = instagramConfig.username || site.contacto.instagram;
 const profileUrl = instagramConfig.profile_url || site.contacto.instagramUrl;
-
-const posts = (await getCollection('instagram'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, limit);
 ---
 
 <section class:list={['instagram', className]} id="instagram" aria-labelledby="instagram-title">
@@ -41,30 +35,15 @@ const posts = (await getCollection('instagram'))
       <p class="instagram__subtitle">{subtitle}</p>
     </header>
 
-    {embed ? (
+    {embed && (
       <div class="instagram__embed">
-        <iframe src={embed} title="Feed de Instagram de Verderapia" loading="lazy" allowtransparency="true"></iframe>
-      </div>
-    ) : (
-      <div class="instagram__grid">
-        {posts.map((post) => (
-          <a
-            class="instagram__card"
-            href={post.data.permalink}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Ver publicación en Instagram: ${post.data.caption.slice(0, 60)}`}
-          >
-            <img src={post.data.image} alt="" loading="lazy" decoding="async" />
-            <span class="instagram__overlay">
-              <span class="instagram__caption">{post.data.caption}</span>
-              <span class="instagram__meta">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-6.7-4.3-9.3-8.1C.8 10 2 6.3 5.2 5.2 7.2 4.5 9.2 5.2 12 8c2.8-2.8 4.8-3.5 6.8-2.8C22 6.3 23.2 10 21.3 12.9 18.7 16.7 12 21 12 21Z"/></svg>
-                {post.data.likes}
-              </span>
-            </span>
-          </a>
-        ))}
+        <iframe
+          src={embed}
+          title={`Feed oficial de Instagram de @${username}`}
+          loading="lazy"
+          scrolling="no"
+          allowtransparency="true"
+        ></iframe>
       </div>
     )}
 
