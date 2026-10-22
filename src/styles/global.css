@@ -446,6 +446,11 @@ p {
   height: calc(70cqw + 180px);
   border: 0;
 }
+.instagram__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
 
 /* =========================================================
    POSTS / BLOG
