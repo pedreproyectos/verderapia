@@ -2,18 +2,6 @@
  * Datos centrales del sitio Verderapia.
  * Toda la información proviene de `verderapia.md`.
  */
-import { galeria } from './images';
-
-export type Pilar = {
-  id: 'verde' | 'arte' | 'terapia';
-  eyebrow: string;
-  titulo: string;
-  subtitulo: string;
-  descripcion: string;
-  items: string[];
-  imagen: string;
-};
-
 export type Terapia = {
   nombre: string;
   descripcion: string;
@@ -34,7 +22,7 @@ export const site = {
   elementos: ['Agua', 'Tierra', 'Luz', 'Aire'],
 
   contacto: {
-    email: 'consultas@verderapia.cl',
+    email: 'verderapia@gmail.com',
     whatsapp: '+56 9 8754 8041',
     whatsappLink: 'https://wa.me/56987548041',
     direccion: 'La Bodega 16137, Condominio Los Quillayes etapa III, Quilpué',
@@ -49,7 +37,7 @@ export const site = {
     titulo: '¡Regala una Gift Card!',
     texto:
       'Regala un momento de descanso y bienestar. Escríbenos y te enviamos una linda Tarjeta de Regalo con el servicio que elijas.',
-    canales: ['consultas@verderapia.cl', 'WhatsApp +56 9 8754 8041'],
+    canales: ['verderapia@gmail.com', 'WhatsApp +56 9 8754 8041'],
   },
 
   promos: [
@@ -61,61 +49,6 @@ export const site = {
     {
       titulo: 'Gift Cards',
       detalle: 'Regala una experiencia de bienestar a quien más quieres.',
-    },
-  ],
-
-  pilares: <Pilar[]>[
-    {
-      id: 'verde',
-      eyebrow: 'Visita nuestra parcela sustentable',
-      titulo: 'Verde',
-      subtitulo: 'Parcela sustentable',
-      descripcion:
-        'Contamos con paneles solares y de agua caliente, procesos de reciclaje, creación de compost, talleres de huerta y Lombricultura, venta de productos orgánicos y más.',
-      items: [
-        'Paneles solares y agua caliente',
-        'Reciclaje y compost',
-        'Talleres de huerta y Lombricultura',
-        'Venta de productos orgánicos',
-      ],
-      imagen: galeria.verde[0],
-    },
-    {
-      id: 'arte',
-      eyebrow: 'Manualidades y talleres',
-      titulo: 'Arte',
-      subtitulo: 'Manualidades y talleres',
-      descripcion:
-        '¡Inscríbete en nuestros talleres de manualidades y trabajos artesanales! Además puedes adquirir nuestros productos hechos a mano.',
-      items: [
-        'Figuras pintadas',
-        'Portavelas',
-        'Maceteros de botellas',
-        'Encuadernación artesanal',
-        'Portainciensos',
-        'Frascos reciclados',
-        'Cajas de madera con hierbas medicinales',
-      ],
-      imagen: galeria.arte[0],
-    },
-    {
-      id: 'terapia',
-      eyebrow: 'YOGA | TAROT | TERAPIAS',
-      titulo: 'Terapia',
-      subtitulo: 'Yoga, tarot y terapias',
-      descripcion:
-        'Un espacio para volver al cuerpo y a la calma. Terapias individuales, clases de yoga y acompañamiento terapéutico.',
-      items: [
-        'Hatha Vinyasa Yoga',
-        'Terapia Floral',
-        'Tarot Terapéutico',
-        'Reiki',
-        'Cama de Jade',
-        'Reflexología Podal',
-        'Masajes Terapéuticos',
-        'Drenaje Linfático',
-      ],
-      imagen: galeria.terapia[0],
     },
   ],
 

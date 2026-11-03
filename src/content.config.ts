@@ -16,6 +16,33 @@ const posts = defineCollection({
   }),
 });
 
+/** Diapositivas del slider principal del home. Editables desde Keystatic (/keystatic). */
+const slides = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/slides' }),
+  schema: z.object({
+    title: z.string(),
+    eyebrow: z.string().optional(),
+    text: z.string().optional(),
+    image: z.string(),
+    alt: z.string().optional(),
+    order: z.number().default(0),
+  }),
+});
+
+/** Pilares del sitio (Verde, Arte, Terapia). Editables desde Keystatic (/keystatic). */
+const pilares = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/pilares' }),
+  schema: z.object({
+    titulo: z.string(),
+    eyebrow: z.string().optional(),
+    subtitulo: z.string().optional(),
+    descripcion: z.string().optional(),
+    items: z.array(z.string()).default([]),
+    imagen: z.string(),
+    order: z.number().default(0),
+  }),
+});
+
 /** Call to actions del sitio. Editables desde Keystatic (/keystatic).
  * Uno puede marcarse como `principal` (aparece arriba); el resto se
  * ordena con `order`.
@@ -31,4 +58,4 @@ const ctas = defineCollection({
   }),
 });
 
-export const collections = { posts, ctas };
+export const collections = { posts, slides, pilares, ctas };

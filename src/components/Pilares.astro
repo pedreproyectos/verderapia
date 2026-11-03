@@ -1,12 +1,12 @@
 ---
-import { site } from '../data/site';
+import { getPilares } from '../data/pilares';
 
 interface Props {
   variant?: 'rows' | 'cards';
 }
 
 const { variant = 'rows' } = Astro.props;
-const pilares = site.pilares;
+const pilares = await getPilares();
 ---
 
 {variant === 'rows' ? (

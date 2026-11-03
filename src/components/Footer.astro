@@ -8,11 +8,7 @@ const c = site.contacto;
 <footer class="footer" id="footer">
   <div class="container footer__grid">
     <div class="footer__brand">
-      <svg class="footer__logo" viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M32 52c0-13 6-21 19-25-2 15-9 22-19 25Z" fill="var(--brand-2)"/>
-        <path d="M32 52C19 48 12 40 10 25c13 4 20 13 22 27Z" fill="var(--accent)"/>
-        <path d="M32 52V33" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
-      </svg>
+      <img class="footer__logo" src="/images/verderapia/verderapialogo.jpg" alt="" />
       <div>
         <strong>{site.nombre}</strong>
         <p>{site.tagline}.</p>
@@ -71,10 +67,13 @@ const c = site.contacto;
     align-items: flex-start;
   }
   .footer__logo {
-    width: 40px;
-    height: 40px;
+    width: 150px;
+    height: 150px;
     flex: none;
-    color: var(--ink);
+    object-fit: cover;
+    border-radius: 50%;
+    -webkit-mask-image: radial-gradient(circle closest-side, black 90%, transparent 100%);
+    mask-image: radial-gradient(circle closest-side, black 90%, transparent 100%);
   }
   .footer__brand strong {
     font-family: var(--font-display);

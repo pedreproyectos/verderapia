@@ -51,6 +51,80 @@ export default config({
       },
     }),
 
+    slides: collection({
+      label: 'Slider principal (home)',
+      path: 'src/content/slides/*',
+      format: { data: 'yaml' },
+      slugField: 'title',
+      columns: ['order', 'eyebrow'],
+      schema: {
+        title: fields.slug({
+          name: { label: 'Título' },
+          slug: {
+            label: 'Identificador',
+            description: 'Nombre del archivo. No cambia lo que se ve en el sitio.',
+          },
+        }),
+        eyebrow: fields.text({ label: 'Antetítulo (eyebrow)' }),
+        text: fields.text({
+          label: 'Descripción',
+          multiline: true,
+          description: 'Texto que se muestra junto al título sobre la imagen.',
+        }),
+        image: fields.image({
+          label: 'Imagen',
+          directory: 'public/images/verderapia',
+          publicPath: '/images/verderapia/',
+          validation: { isRequired: true },
+        }),
+        alt: fields.text({
+          label: 'Texto alternativo (alt)',
+          description: 'Descripción breve de la imagen para accesibilidad.',
+        }),
+        order: fields.integer({
+          label: 'Orden',
+          description: 'Las diapositivas se muestran de menor a mayor.',
+          defaultValue: 0,
+        }),
+      },
+    }),
+
+    pilares: collection({
+      label: 'Pilares (Verde, Arte, Terapia)',
+      path: 'src/content/pilares/*',
+      format: { data: 'yaml' },
+      slugField: 'titulo',
+      columns: ['order', 'subtitulo'],
+      schema: {
+        titulo: fields.slug({
+          name: { label: 'Título' },
+          slug: {
+            label: 'Identificador',
+            description:
+              'Nombre del archivo. Define el ancla del menú (#verde, #arte, #terapia). No lo cambies si quieres mantener los enlaces.',
+          },
+        }),
+        eyebrow: fields.text({ label: 'Antetítulo (eyebrow)' }),
+        subtitulo: fields.text({ label: 'Subtítulo' }),
+        descripcion: fields.text({ label: 'Descripción', multiline: true }),
+        items: fields.array(fields.text({ label: 'Ítem' }), {
+          label: 'Ítems',
+          itemLabel: (props) => props.value,
+        }),
+        imagen: fields.image({
+          label: 'Imagen',
+          directory: 'public/images/verderapia',
+          publicPath: '/images/verderapia/',
+          validation: { isRequired: true },
+        }),
+        order: fields.integer({
+          label: 'Orden',
+          description: 'Los pilares se muestran de menor a mayor.',
+          defaultValue: 0,
+        }),
+      },
+    }),
+
     ctas: collection({
       label: 'Call to actions',
       path: 'src/content/ctas/*',

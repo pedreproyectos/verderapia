@@ -12,18 +12,32 @@ import InstagramFeed from '../../components/InstagramFeed.astro';
 import GiftCard from '../../components/GiftCard.astro';
 import Contacto from '../../components/Contacto.astro';
 import Footer from '../../components/Footer.astro';
-import { site } from '../../data/site';
 import { galeria } from '../../data/images';
+import { getHeroSlides } from '../../data/slides';
 import { getCtas } from '../../data/ctas';
 
-const slides = galeria.hero.map((src, i) => ({
-  src,
-  alt: `Verderapia — parcela sustentable ${i + 1}`,
-}));
+// Las diapositivas del hero se administran desde Keystatic (/keystatic).
+// Si aún no hay ninguna, se usa el catálogo por defecto como respaldo.
+const heroSlides = await getHeroSlides();
+const slides = heroSlides.length
+  ? heroSlides.map((slide) => ({
+      src: slide.image,
+      alt: slide.alt,
+      eyebrow: slide.eyebrow,
+      title: slide.title,
+      text: slide.text,
+    }))
+  : galeria.hero.map((src, i) => ({
+      src,
+      alt: `Verderapia — parcela sustentable ${i + 1}`,
+    }));
 
 const ctas = await getCtas();
 const mainCta = ctas[0];
 const secondaryCtas = ctas.slice(1);
+
+// Muestra el ícono de WhatsApp cuando el enlace es un chat de WhatsApp.
+const isWhatsApp = (href: string) => /wa\.me|whatsapp/i.test(href);
 ---
 
 <Base tema={1}>
@@ -32,34 +46,36 @@ const secondaryCtas = ctas.slice(1);
   <!-- HERO -->
   <section class="hero" aria-label="Bienvenida">
     <div class="hero__slider">
-      <Slider slides={slides} variant="kenburns" autoplay={7000} showCaptions={false} priority />
+      <Slider slides={slides} variant="kenburns" autoplay={7000} showCaptions priority />
     </div>
     <div class="hero__overlay">
-      <div class="container hero__content">
-        <p class="hero__kicker">{site.heroKicker}</p>
-        <h1 class="hero__title">{site.heroTitulo}</h1>
-        <div class="hero__actions">
-          {mainCta && (
-            <a
-              class="btn"
-              href={mainCta.href}
-              target={mainCta.external ? '_blank' : undefined}
-              rel={mainCta.external ? 'noopener noreferrer' : undefined}
-            >
-              {mainCta.label}
-            </a>
-          )}
-          {secondaryCtas.map((cta) => (
-            <a
-              class="btn hero__ghost"
-              href={cta.href}
-              target={cta.external ? '_blank' : undefined}
-              rel={cta.external ? 'noopener noreferrer' : undefined}
-            >
-              {cta.label}
-            </a>
-          ))}
-        </div>
+      <div class="hero__actions">
+        {mainCta && (
+          <a
+            class="btn"
+            href={mainCta.href}
+            target={mainCta.external ? '_blank' : undefined}
+            rel={mainCta.external ? 'noopener noreferrer' : undefined}
+          >
+            {isWhatsApp(mainCta.href) && (
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 0 1 6.9 12.6l-.3.5.8 2.9-3-.8-.5.3A8.2 8.2 0 1 1 12 3.8Zm-3 4c-.2 0-.5.1-.7.4-.3.3-.9 1-.9 2.2s.9 2.5 1 2.7c.2.2 1.8 2.9 4.5 3.9 2.2.9 2.7.7 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3l-1.7-.8c-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.2-.1-1-.4-1.8-1.1-.7-.6-1.1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.4-.4c.1-.2.1-.3.2-.5 0-.2 0-.3-.1-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5Z"/></svg>
+            )}
+            {mainCta.label}
+          </a>
+        )}
+        {secondaryCtas.map((cta) => (
+          <a
+            class="btn hero__ghost"
+            href={cta.href}
+            target={cta.external ? '_blank' : undefined}
+            rel={cta.external ? 'noopener noreferrer' : undefined}
+          >
+            {isWhatsApp(cta.href) && (
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 0 1 6.9 12.6l-.3.5.8 2.9-3-.8-.5.3A8.2 8.2 0 1 1 12 3.8Zm-3 4c-.2 0-.5.1-.7.4-.3.3-.9 1-.9 2.2s.9 2.5 1 2.7c.2.2 1.8 2.9 4.5 3.9 2.2.9 2.7.7 3.2.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3l-1.7-.8c-.2-.1-.4-.1-.5.1l-.7.9c-.1.2-.3.2-.5.1-.2-.1-1-.4-1.8-1.1-.7-.6-1.1-1.3-1.2-1.5-.1-.2 0-.3.1-.4l.4-.4c.1-.2.1-.3.2-.5 0-.2 0-.3-.1-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5Z"/></svg>
+            )}
+            {cta.label}
+          </a>
+        ))}
       </div>
     </div>
   </section>
@@ -101,6 +117,9 @@ const secondaryCtas = ctas.slice(1);
     align-items: end;
     min-height: 100svh;
     overflow: hidden;
+    /* Espacio reservado abajo para los CTA, por encima de los cuales flota
+       el texto de cada diapositiva. */
+    --hero-cta-space: clamp(6.5rem, 14vh, 9rem);
   }
   .hero__slider {
     position: absolute;
@@ -131,34 +150,29 @@ const secondaryCtas = ctas.slice(1);
       rgba(20, 34, 24, 0.9) 100%
     );
   }
-  .hero__content {
-    max-width: 940px;
-    color: #fff;
+  /* El texto de cada diapositiva se muestra justo encima de los CTA, dentro de
+     una caja de vidrio esmerilado para mantener la legibilidad. */
+  .hero :global(.slider__caption) {
+    bottom: var(--hero-cta-space);
+    left: clamp(1rem, 4vw, 3rem);
+    right: auto;
+    width: fit-content;
+    max-width: min(640px, 90%);
+    padding: clamp(1rem, 2.4vw, 1.5rem) clamp(1.2rem, 3vw, 1.8rem);
+    background: rgba(18, 30, 22, 0.45);
+    backdrop-filter: blur(16px) saturate(1.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
   }
-  .hero__kicker {
-    display: inline-block;
-    padding: 0.5em 1.1em;
-    border: 1px solid rgba(255, 255, 255, 0.42);
-    border-radius: 999px;
-    font-size: 0.75rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(6px);
-  }
-  .hero__title {
-    margin: 1.2rem 0 1rem;
-    font-size: clamp(2.4rem, 5.2vw, 4.3rem);
-    line-height: 1.02;
-    text-wrap: balance;
-    text-shadow: 0 4px 40px rgba(0, 0, 0, 0.35);
-  }
-  /* El CTA vive en su propia fila al pie del hero, para tapar lo mínimo de la imagen */
+  /* El CTA vive en su propia fila al pie del hero, alineado a la izquierda
+     igual que el texto de la diapositiva. */
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 0.9rem;
-    margin-top: clamp(1.2rem, 3vh, 2.2rem);
+    margin-inline: auto;
     pointer-events: auto;
   }
   .hero__ghost {
@@ -181,9 +195,6 @@ const secondaryCtas = ctas.slice(1);
     .hero__overlay {
       padding-top: clamp(7rem, 18vh, 10rem);
       padding-bottom: clamp(2.2rem, 5vh, 3rem);
-    }
-    .hero__title {
-      font-size: clamp(2.1rem, 8.5vw, 3rem);
     }
     .hero :global(.slider__dots) {
       left: auto;

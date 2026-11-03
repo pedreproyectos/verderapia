@@ -30,11 +30,7 @@ const navCta = cta ?? (mainCta
 <header class:list={['nav', `nav--${variant}`]} data-nav>
   <div class="nav__inner container">
     <a class="nav__brand" href="/" aria-label="Verderapia — inicio">
-      <svg class="nav__logo" viewBox="0 0 64 64" aria-hidden="true">
-        <path d="M32 52c0-13 6-21 19-25-2 15-9 22-19 25Z" fill="var(--brand-2)"/>
-        <path d="M32 52C19 48 12 40 10 25c13 4 20 13 22 27Z" fill="var(--accent)"/>
-        <path d="M32 52V33" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none"/>
-      </svg>
+      <img class="nav__logo" src="/images/verderapia/verderapialogo.jpg" alt="" />
       <span class="nav__name">{site.nombre}</span>
     </a>
 
@@ -93,7 +89,7 @@ const navCta = cta ?? (mainCta
     align-items: center;
     justify-content: space-between;
     gap: 1.5rem;
-    padding-block: 1.05rem;
+    padding-block: 0.6rem;
   }
   .nav__brand {
     display: inline-flex;
@@ -105,9 +101,12 @@ const navCta = cta ?? (mainCta
     letter-spacing: -0.01em;
   }
   .nav__logo {
-    width: 30px;
-    height: 30px;
-    color: var(--ink);
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    -webkit-mask-image: radial-gradient(circle closest-side, black 90%, transparent 100%);
+    mask-image: radial-gradient(circle closest-side, black 90%, transparent 100%);
   }
   .nav__links {
     display: flex;

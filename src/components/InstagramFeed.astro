@@ -2,56 +2,95 @@
 import { site } from '../data/site';
 import instagramConfig from '../data/instagram.json';
 
-interface Props {
-  title?: string;
-  subtitle?: string;
-  class?: string;
-  /** Si se entrega, se muestra un embed externo (LightWidget, EmbedSocial, Behold, etc.) */
-  embedSrc?: string;
+interface InstaPost {
+  image: string;
+  href?: string;
+  alt?: string;
 }
 
-const {
-  title = 'Novedades',
-  subtitle = 'Mensajes semanales, talleres, terapias y la vida en nuestra parcela.',
-  class: className = '',
-  embedSrc,
-} = Astro.props;
+interface Props {
+  class?: string;
+  /** Publicaciones a mostrar. Por defecto se leen de `instagram.json`. */
+  posts?: InstaPost[];
+}
 
-// Feed oficial de Instagram de la cuenta: se actualiza solo con las publicaciones reales.
-// El embed puede venir por prop o desde la configuración editable en /keystatic.
-const embed = embedSrc ?? instagramConfig.embed_src ?? '';
+const { class: className = '', posts } = Astro.props;
+
 const username = instagramConfig.username || site.contacto.instagram;
 const profileUrl = instagramConfig.profile_url || site.contacto.instagramUrl;
+
+// Publicaciones de Instagram: si no llegan por prop, se leen de la configuración
+// editable en `src/data/instagram.json`.
+const items: InstaPost[] = posts ?? (instagramConfig.posts ?? []);
 ---
 
-<section class:list={['instagram', className]} id="instagram" aria-labelledby="instagram-title">
+<section
+  class:list={['instagram', 'section', className]}
+  id="instagram"
+  aria-label={`Publicaciones de Instagram de @${username}`}
+>
   <div class="container">
-    <header class="instagram__head">
-      <p class="instagram__eyebrow">
-        <svg viewBox="0 0 24 24" aria-hidden="true" class="instagram__icon"><path fill="currentColor" d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.3 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.3-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2Zm0 1.8c-3.1 0-3.5 0-4.7.1-1.1.1-1.7.2-2.1.4-.5.2-.9.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.3 1-.4 2.1C2.7 9.8 2.7 10.2 2.7 12s0 2.2.1 3.4c.1 1.1.2 1.7.4 2.1.2.5.4.9.8 1.2.4.4.7.6 1.2.8.4.2 1 .3 2.1.4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1.1-.1 1.7-.2 2.1-.4.5-.2.9-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.3-1 .4-2.1.1-1.2.1-1.6.1-3.4s0-2.2-.1-3.4c-.1-1.1-.2-1.7-.4-2.1-.2-.5-.4-.9-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.3-2.1-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8Zm0 1.8a3.1 3.1 0 1 0 0 6.2 3.1 3.1 0 0 0 0-6.2Zm5.2-2.4a1.15 1.15 0 1 1 0 2.3 1.15 1.15 0 0 1 0-2.3Z"/></svg>
-        @{username}
-      </p>
-      <h2 id="instagram-title">{title}</h2>
-      <p class="instagram__subtitle">{subtitle}</p>
-    </header>
-
-    {embed && (
-      <div class="instagram__embed">
-        <iframe
-          src={embed}
-          title={`Feed oficial de Instagram de @${username}`}
-          loading="lazy"
-          scrolling="no"
-          allowtransparency="true"
-        ></iframe>
+    {items.length > 0 ? (
+      <div class="instagram__grid">
+        {items.map((p) => (
+          <a
+            class="instagram__card"
+            href={p.href ?? profileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={p.alt || `Publicación de Instagram de ${username}`}
+          >
+            <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
+          </a>
+        ))}
       </div>
+    ) : (
+      <p class="instagram__empty muted">
+        Aún no hay publicaciones. Agrégalas en <code>src/data/instagram.json</code>.
+      </p>
     )}
-
-    <div class="instagram__cta">
-      <a class="btn btn--instagram" href={profileUrl} target="_blank" rel="noopener noreferrer">
-        Visita nuestra cuenta
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
-    </div>
   </div>
 </section>
+
+<style>
+  .instagram__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2.5vw, 1.75rem);
+  }
+  .instagram__card {
+    position: relative;
+    display: block;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+  }
+  .instagram__card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow);
+    border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
+  }
+  .instagram__card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .instagram__card:hover img {
+    transform: scale(1.05);
+  }
+  .instagram__empty {
+    padding: 2rem;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+  }
+  @media (max-width: 640px) {
+    .instagram__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

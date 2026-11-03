@@ -210,12 +210,6 @@ p {
   border-color: var(--line);
   box-shadow: none;
 }
-.btn--instagram {
-  background: linear-gradient(135deg, #f9ce34, #ee2a7b 55%, #6228d7);
-  color: #fff;
-  box-shadow: 0 16px 34px -18px rgba(238, 42, 123, 0.7);
-}
-
 /* Animación de aparición */
 [data-reveal] {
   opacity: 0;
@@ -325,20 +319,23 @@ p {
   background: var(--overlay);
 }
 .slider__eyebrow {
-  font-size: 0.72rem;
+  font-size: 0.92rem;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  opacity: 0.85;
+  color: #fff;
+  opacity: 1;
 }
 .slider__title {
   font-family: var(--font-display);
-  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-size: clamp(1.7rem, 3.8vw, 2.6rem);
   line-height: 1.1;
+  color: #fff;
 }
 .slider__text {
   max-width: 46ch;
-  font-size: 0.95rem;
-  opacity: 0.9;
+  font-size: 1.2rem;
+  color: #fff;
+  opacity: 1;
 }
 
 /* Flechas */
@@ -401,55 +398,6 @@ p {
 }
 [data-tema='1'] .slider__dot.is-active {
   background: var(--accent-2);
-}
-
-/* =========================================================
-   INSTAGRAM FEED
-   ========================================================= */
-.instagram {
-  padding-block: clamp(4rem, 9vw, 7rem);
-}
-.instagram__head {
-  text-align: center;
-  max-width: 640px;
-  margin: 0 auto clamp(2rem, 5vw, 3.2rem);
-}
-.instagram__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  font-weight: 700;
-  color: var(--brand);
-  letter-spacing: 0.04em;
-  margin-bottom: 0.8rem;
-}
-.instagram__icon {
-  width: 1.35em;
-  height: 1.35em;
-}
-.instagram__subtitle {
-  margin-top: 0.9rem;
-  color: var(--ink-soft);
-}
-.instagram__embed {
-  margin-top: clamp(1.8rem, 4vw, 2.8rem);
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--surface);
-  container-type: inline-size;
-}
-.instagram__embed iframe {
-  display: block;
-  width: 100%;
-  /* El embed oficial de perfil mide ~2/3 de su ancho (rejilla 3x2) + cabecera */
-  height: calc(70cqw + 180px);
-  border: 0;
-}
-.instagram__cta {
-  display: flex;
-  justify-content: center;
-  margin-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 /* =========================================================
