@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "verde",
+  "name": "verderapia",
   "compatibility_date": "2026-10-14",
   "compatibility_flags": ["nodejs_compat"],
   // Adaptador de Cloudflare: worker para las rutas de Keystatic y el sitio.
