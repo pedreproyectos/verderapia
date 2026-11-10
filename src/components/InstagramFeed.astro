@@ -1,16 +1,11 @@
 ---
 import { site } from '../data/site';
+import { getInstagramPosts, type InstaPost } from '../data/instagram';
 import instagramConfig from '../data/instagram.json';
-
-interface InstaPost {
-  image: string;
-  href?: string;
-  alt?: string;
-}
 
 interface Props {
   class?: string;
-  /** Publicaciones a mostrar. Por defecto se leen de `instagram.json`. */
+  /** Publicaciones a mostrar. Por defecto se obtienen de la API de Instagram. */
   posts?: InstaPost[];
 }
 
@@ -19,9 +14,8 @@ const { class: className = '', posts } = Astro.props;
 const username = instagramConfig.username || site.contacto.instagram;
 const profileUrl = instagramConfig.profile_url || site.contacto.instagramUrl;
 
-// Publicaciones de Instagram: si no llegan por prop, se leen de la configuración
-// editable en `src/data/instagram.json`.
-const items: InstaPost[] = posts ?? (instagramConfig.posts ?? []);
+// Publicaciones de Instagram: si no llegan por prop, se obtienen de la API.
+const items: InstaPost[] = posts ?? (await getInstagramPosts());
 ---
 
 <section
@@ -35,12 +29,18 @@ const items: InstaPost[] = posts ?? (instagramConfig.posts ?? []);
         {items.map((p) => (
           <a
             class="instagram__card"
-            href={p.href ?? profileUrl}
+            href={p.href || profileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={p.alt || `Publicación de Instagram de ${username}`}
+            aria-label={p.alt || `Publicación de Instagram de @${username}`}
           >
-            <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
+            <div class="instagram__media">
+              <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
+            </div>
+            <div class="instagram__caption">
+              <p class="instagram__text">{p.text ?? ''}</p>
+              <span class="instagram__link">Ver publicación →</span>
+            </div>
           </a>
         ))}
       </div>
@@ -59,9 +59,8 @@ const items: InstaPost[] = posts ?? (instagramConfig.posts ?? []);
     gap: clamp(1rem, 2.5vw, 1.75rem);
   }
   .instagram__card {
-    position: relative;
-    display: block;
-    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: var(--radius);
@@ -73,14 +72,37 @@ const items: InstaPost[] = posts ?? (instagramConfig.posts ?? []);
     box-shadow: var(--shadow);
     border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
   }
-  .instagram__card img {
+  .instagram__media {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+  .instagram__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .instagram__card:hover img {
+  .instagram__card:hover .instagram__media img {
     transform: scale(1.05);
+  }
+  .instagram__caption {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: clamp(1rem, 2vw, 1.3rem);
+  }
+  .instagram__text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+  }
+  .instagram__link {
+    font-weight: 700;
+    font-size: 0.86rem;
+    color: var(--brand);
   }
   .instagram__empty {
     padding: 2rem;

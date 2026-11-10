@@ -1,22 +1,24 @@
 ---
 import { site } from '../data/site';
 import { galeria } from '../data/images';
+import { getHistoria } from '../data/historia';
 
 interface Props {
   variant?: 'split' | 'centered';
 }
 
 const { variant = 'split' } = Astro.props;
-const img = galeria.retratos[0];
-const img2 = galeria.verde[1];
+const historia = await getHistoria();
+const img = historia?.imagen ?? galeria.retratos[0];
+const img2 = historia?.imagen2 ?? galeria.verde[1];
 ---
 
 <section class:list={['historia', `historia--${variant}`, 'section']} id="historia" aria-labelledby="historia-title">
   <div class="container historia__grid">
     <div class="historia__text" data-reveal>
-      <p class="eyebrow">Nuestra historia</p>
-      <h2 id="historia-title">{site.heroTitulo}</h2>
-      <p class="lead">{site.historiaLarga}</p>
+      <p class="eyebrow">{historia?.eyebrow ?? 'Nuestra historia'}</p>
+      <h2 id="historia-title">{historia?.titulo ?? 'Un lugar de reencuentro y conexión con nuestras raíces'}</h2>
+      <p class="lead">{historia?.texto}</p>
       <ul class="historia__elementos">
         {site.elementos.map((el, i) => (
           <li style={`--i:${i}`}>

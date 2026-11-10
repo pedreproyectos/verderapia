@@ -1,8 +1,9 @@
 ---
 import { site } from '../data/site';
-import { galeria } from '../data/images';
+import { getGiftCard, type GiftCard } from '../data/giftcard';
 
-const img = galeria.hero[3];
+const giftcard: GiftCard = (await getGiftCard()) ?? { promos: [] };
+const img = giftcard.imagen;
 ---
 
 <section class="gift section" id="giftcard" aria-labelledby="gift-title">
@@ -10,11 +11,11 @@ const img = galeria.hero[3];
     <div class="gift__card" data-reveal>
       <img class="gift__bg" src={img} alt="" aria-hidden="true" loading="lazy" decoding="async" />
       <div class="gift__content">
-        <p class="eyebrow">{site.giftCard.titulo}</p>
-        <h2 id="gift-title">{site.descuentos.titulo}</h2>
-        <p class="lead">{site.descuentos.adicional}</p>
+        <p class="eyebrow">{giftcard.titulo}</p>
+        <h2 id="gift-title">{giftcard.descuentoTitulo}</h2>
+        <p class="lead">{giftcard.descuentoAdicional}</p>
         <ul class="gift__promos">
-          {site.promos.map((p) => (
+          {giftcard.promos.map((p) => (
             <li>
               <strong>{p.titulo}</strong>
               <span>{p.detalle}</span>
@@ -25,7 +26,7 @@ const img = galeria.hero[3];
           <a class="btn" href={site.contacto.whatsappLink} target="_blank" rel="noopener noreferrer">Pedir mi Gift Card</a>
           <a class="btn btn--ghost gift__ghost" href={`mailto:${site.contacto.email}`}>{site.contacto.email}</a>
         </div>
-        <p class="gift__nota">{site.descuentos.nota}</p>
+        <p class="gift__nota">{giftcard.descuentoNota}</p>
       </div>
     </div>
   </div>

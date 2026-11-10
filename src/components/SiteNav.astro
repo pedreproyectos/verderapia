@@ -90,6 +90,7 @@ const navCta = cta ?? (mainCta
     justify-content: space-between;
     gap: 1.5rem;
     padding-block: 0.6rem;
+    transition: padding-block 0.35s ease;
   }
   .nav__brand {
     display: inline-flex;
@@ -107,6 +108,7 @@ const navCta = cta ?? (mainCta
     border-radius: 50%;
     -webkit-mask-image: radial-gradient(circle closest-side, black 90%, transparent 100%);
     mask-image: radial-gradient(circle closest-side, black 90%, transparent 100%);
+    transition: width 0.35s ease, height 0.35s ease;
   }
   .nav__links {
     display: flex;
@@ -197,6 +199,13 @@ const navCta = cta ?? (mainCta
     background: var(--brand);
     color: var(--btn-ink);
     border-color: transparent;
+  }
+  .nav--transparent.is-scrolled .nav__inner {
+    padding-block: 0.25rem;
+  }
+  .nav--transparent.is-scrolled .nav__logo {
+    width: 42px;
+    height: 42px;
   }
 
   /* Variante glass */

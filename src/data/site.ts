@@ -13,12 +13,6 @@ export type Terapia = {
 export const site = {
   nombre: 'Verderapia',
   tagline: 'Lugar de reencuentro y conexión con nuestras raíces',
-  heroTitulo: 'Un lugar de reencuentro y conexión con nuestras raíces',
-  heroKicker: 'Parcela sustentable · Terapias · Arte · Quilpué',
-  historia:
-    'Hace mucho tiempo, en un lugar escondido de la memoria, nació un sueño... esa semilla quedó guardada hasta que encontró agua, tierra, luz y aire en donde pudiera arraigar, y al unir estos cuatro elementos... nace Verderapia.',
-  historiaLarga:
-    'Hace mucho tiempo, en un lugar escondido de la memoria, nació un sueño, y esa semilla quedó guardada hasta que encontró agua... tierra... luz... aire... en donde se pudiera arraigar. Al unir estos cuatro elementos nació Verderapia.',
   elementos: ['Agua', 'Tierra', 'Luz', 'Aire'],
 
   contacto: {
@@ -34,23 +28,9 @@ export const site = {
   },
 
   giftCard: {
-    titulo: '¡Regala una Gift Card!',
     texto:
       'Regala un momento de descanso y bienestar. Escríbenos y te enviamos una linda Tarjeta de Regalo con el servicio que elijas.',
-    canales: ['verderapia@gmail.com', 'WhatsApp +56 9 8754 8041'],
   },
-
-  promos: [
-    { titulo: '10% por pago anticipado', detalle: 'En todas tus terapias y talleres.' },
-    {
-      titulo: '10% adicional',
-      detalle: 'Si inscribes a un@ amig@ junto a ti.',
-    },
-    {
-      titulo: 'Gift Cards',
-      detalle: 'Regala una experiencia de bienestar a quien más quieres.',
-    },
-  ],
 
   terapias: <Terapia[]>[
     {
@@ -120,55 +100,6 @@ export const site = {
       extra: 'Tarot + Terapia Floral: $30.000 (90 min)',
     },
   ],
-
-  yoga: {
-    nombre: 'Hatha Vinyasa Yoga',
-    descripcion:
-      'Las clases consisten en una etapa de preparación de asanas, pranayamas (respiraciones) activadoras, calmantes y finaliza con una meditación.',
-    horarios: [
-      { dia: 'Lunes', clases: [{ hora: '9:15', nombre: 'Yoga Restaurativo' }] },
-      {
-        dia: 'Miércoles',
-        clases: [
-          { hora: '9:15', nombre: 'Hatha Yoga' },
-          { hora: '11:00', nombre: 'Yoga Restaurativo' },
-        ],
-      },
-      { dia: 'Sábado', clases: [{ hora: '10:00', nombre: 'Hatha Yoga' }] },
-    ],
-    precios: [
-      { nombre: 'Clase personalizada', detalle: '80 min', valor: '$16.000' },
-      { nombre: '4 clases por mes', detalle: '', valor: '$25.000' },
-      { nombre: '8 clases por mes', detalle: '', valor: '$32.000' },
-    ],
-    nota:
-      'Consultar por descuentos de pago anticipado y otros descuentos promocionales.',
-  },
-
-  talleres: [
-    {
-      nombre: 'Taller de Lombricultura',
-      descripcion:
-        'Aprende a reciclar los desechos orgánicos de tu casa. Parte teórica y práctica de aproximadamente 3 horas.',
-      horario: '15:30 a 18:30 hrs',
-      fecha: 'Sábado',
-      retribucion: '$15.000 · $25.000 si vienes acompañad@',
-      expositor: 'ECOFEN ANTU — Luis Estay',
-      temas: [
-        '¿Qué es la lombricultura?',
-        'Características de la lombriz roja californiana',
-        'Desechos que se pueden utilizar para el proceso',
-        'Estructura y sistema de alimentación',
-      ],
-    },
-  ],
-
-  descuentos: {
-    titulo: 'Obtén un 10% de descuento por pago anticipado',
-    adicional:
-      'Obtén un segundo descuento de un 10% adicional si inscribes a un@ amig@.',
-    nota: '* Descuentos válidos sobre terapias y talleres, según disponibilidad.',
-  },
 
   seo: {
     titulo: 'Verderapia — Parcela sustentable, terapias, yoga y arte en Quilpué',

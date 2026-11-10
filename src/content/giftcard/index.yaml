@@ -1,0 +1,12 @@
+imagen: /images/verderapia/gift-cards-y-experiencias/image.webp
+titulo: "¡Regala una Gift Card!"
+descuentoTitulo: Obtén un 10% de descuento por pago anticipado
+descuentoAdicional: Obtén un segundo descuento de un 10% adicional si inscribes a un@ amig@.
+descuentoNota: "* Descuentos válidos sobre terapias y talleres, según disponibilidad."
+promos:
+  - titulo: 10% por pago anticipado
+    detalle: En todas tus terapias y talleres.
+  - titulo: 10% adicional
+    detalle: Si inscribes a un@ amig@ junto a ti.
+  - titulo: Gift Cards
+    detalle: Regala una experiencia de bienestar a quien más quieres.

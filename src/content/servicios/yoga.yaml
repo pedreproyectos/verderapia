@@ -1,0 +1,29 @@
+nombre: Yoga
+descripcion: >-
+  Las clases consisten en una etapa de preparación de asanas, pranayamas
+  (respiraciones) activadoras, calmantes y finaliza con una meditación.
+imagen: /images/verderapia/yoga/imagen.webp
+horarios:
+  - dia: Lunes
+    clases:
+      - hora: '9:15'
+        nombre: Yoga Restaurativo
+  - dia: Miércoles
+    clases:
+      - hora: '9:15'
+        nombre: Hatha Yoga
+      - hora: '11:00'
+        nombre: Yoga Restaurativo
+  - dia: Sábado
+    clases:
+      - hora: '10:00'
+        nombre: Hatha Yoga
+precios:
+  - nombre: Clase personalizada
+    detalle: 80 min
+    valor: $16.000
+  - nombre: 4 clases por mes
+    valor: $25.000
+  - nombre: 8 clases por mes
+    valor: $32.000
+nota: Consultar por descuentos de pago anticipado y otros descuentos promocionales.

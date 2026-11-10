@@ -1,6 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import PostCard from './PostCard.astro';
+import { getInstagramPosts } from '../data/instagram';
+import instagramConfig from '../data/instagram.json';
 
 interface Props {
   limit?: number;
@@ -20,6 +22,11 @@ const posts = (await getCollection('posts'))
   .filter((p) => !p.data.draft)
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, limit);
+
+// Publicaciones de Instagram, que se muestran junto a las novedades del blog.
+const instaPosts = await getInstagramPosts();
+const instaUsername = instagramConfig.username;
+const instaProfileUrl = instagramConfig.profile_url ?? '#';
 ---
 
 <section class:list={['posts', className]} id="novedades" aria-labelledby="novedades-title">
@@ -31,6 +38,26 @@ const posts = (await getCollection('posts'))
 
     <div class="posts__grid">
       {posts.map((post) => <PostCard post={post} />)}
+
+      {instaPosts.map((p) => (
+        <a
+          class="post-card post-card--insta"
+          href={p.href || instaProfileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={p.alt || `Publicación de Instagram de @${instaUsername}`}
+        >
+          <div class="post-card__media">
+            <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
+          </div>
+          <div class="post-card__body">
+            <span class="post-card__date">Instagram</span>
+            <h3 class="post-card__title">@{instaUsername}</h3>
+            {p.text && <p class="post-card__desc">{p.text}</p>}
+            <span class="post-card__more">Ver en Instagram →</span>
+          </div>
+        </a>
+      ))}
     </div>
 
     <div class="posts__cta">
@@ -38,3 +65,10 @@ const posts = (await getCollection('posts'))
     </div>
   </div>
 </section>
+
+<style>
+  /* Las tarjetas de Instagram usan imagen cuadrada, como la rejilla original. */
+  .post-card--insta .post-card__media img {
+    aspect-ratio: 1 / 1;
+  }
+</style>

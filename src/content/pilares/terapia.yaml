@@ -1,7 +1,9 @@
 titulo: Terapia
-eyebrow: "YOGA | TAROT | TERAPIAS"
+eyebrow: YOGA | TAROT | TERAPIAS
 subtitulo: Yoga, tarot y terapias
-descripcion: Un espacio para volver al cuerpo y a la calma. Terapias individuales, clases de yoga y acompañamiento terapéutico.
+descripcion: >-
+  Un espacio para volver al cuerpo y a la calma. Terapias individuales, clases
+  de yoga y acompañamiento terapéutico.
 items:
   - Hatha Vinyasa Yoga
   - Terapia Floral
@@ -11,5 +13,5 @@ items:
   - Reflexología Podal
   - Masajes Terapéuticos
   - Drenaje Linfático
-imagen: /images/verderapia/_X7A6316.webp
+imagen: /images/verderapia/terapia/imagen.webp
 order: 2

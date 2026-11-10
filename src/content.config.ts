@@ -43,6 +43,63 @@ const pilares = defineCollection({
   }),
 });
 
+/** Historia principal del home. Editable desde Keystatic (/keystatic) como singleton. */
+const historia = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/historia' }),
+  schema: z.object({
+    eyebrow: z.string().optional(),
+    titulo: z.string().optional(),
+    texto: z.string().optional(),
+    imagen: z.string().optional(),
+    imagen2: z.string().optional(),
+  }),
+});
+
+/** Gift Card y descuentos. Singleton editable desde Keystatic. */
+const giftcard = defineCollection({
+  loader: glob({ pattern: '*.yaml', base: './src/content/giftcard' }),
+  schema: z.object({
+    imagen: z.string().optional(),
+    titulo: z.string().optional(),
+    descuentoTitulo: z.string().optional(),
+    descuentoAdicional: z.string().optional(),
+    descuentoNota: z.string().optional(),
+    promos: z
+      .array(z.object({ titulo: z.string().optional(), detalle: z.string().optional() }))
+      .default([]),
+  }),
+});
+
+/** Servicios (con horarios y precios). Editables desde Keystatic. */
+const servicios = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/servicios' }),
+  schema: z.object({
+    nombre: z.string(),
+    descripcion: z.string().optional(),
+    imagen: z.string().optional(),
+    horarios: z
+      .array(
+        z.object({
+          dia: z.string().optional(),
+          clases: z
+            .array(z.object({ hora: z.string().optional(), nombre: z.string().optional() }))
+            .default([]),
+        }),
+      )
+      .default([]),
+    precios: z
+      .array(
+        z.object({
+          nombre: z.string().optional(),
+          detalle: z.string().optional(),
+          valor: z.string().optional(),
+        }),
+      )
+      .default([]),
+    nota: z.string().optional(),
+  }),
+});
+
 /** Call to actions del sitio. Editables desde Keystatic (/keystatic).
  * Uno puede marcarse como `principal` (aparece arriba); el resto se
  * ordena con `order`.
@@ -58,4 +115,4 @@ const ctas = defineCollection({
   }),
 });
 
-export const collections = { posts, slides, pilares, ctas };
+export const collections = { posts, slides, pilares, ctas, historia, giftcard, servicios };

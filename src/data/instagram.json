@@ -3,11 +3,41 @@
   "profile_url": "https://www.instagram.com/verderapia/",
   "embed_src": "https://www.instagram.com/verderapia/embed/",
   "posts": [
-    { "image": "/images/verderapia/_X7A6291.webp", "alt": "Parcela sustentable Verderapia" },
-    { "image": "/images/verderapia/_X7A6293.webp", "alt": "Verderapia — Quilpué" },
-    { "image": "/images/verderapia/_X7A6300.webp", "alt": "Taller en Verderapia" },
-    { "image": "/images/verderapia/_X7A6309.webp", "alt": "Terapias en Verderapia" },
-    { "image": "/images/verderapia/_X7A6310.webp", "alt": "Arte y manualidades Verderapia" },
-    { "image": "/images/verderapia/_X7A6324.webp", "alt": "Naturaleza y bienestar Verderapia" }
+    {
+      "image": "/images/verderapia/un-lugar-de-reencuentro/image.webp",
+      "text": "Un lugar de reencuentro y conexión con nuestras raíces en Quilpué. 🌿",
+      "href": "",
+      "alt": "Parcela sustentable Verderapia"
+    },
+    {
+      "image": "/images/verderapia/parcela-sustentable/image.webp",
+      "text": "Paneles solares, reciclaje, compost y huerta en armonía con la tierra. ☀️",
+      "href": "",
+      "alt": "Verderapia — Quilpué"
+    },
+    {
+      "image": "/images/verderapia/talleres-y-comunidad/image.webp",
+      "text": "Talleres para aprender y compartir en comunidad. 🪱",
+      "href": "",
+      "alt": "Taller en Verderapia"
+    },
+    {
+      "image": "/images/verderapia/terapias-y-bienestar/image.webp",
+      "text": "Yoga, tarot y masajes para volver a la calma y al equilibrio. 🧘",
+      "href": "",
+      "alt": "Terapias en Verderapia"
+    },
+    {
+      "image": "/images/verderapia/arte-y-manualidades/image.webp",
+      "text": "Talleres artesanales y productos hechos a mano con cariño. 🎨",
+      "href": "",
+      "alt": "Arte y manualidades Verderapia"
+    },
+    {
+      "image": "/images/verderapia/conexion-con-la-tierra/image.webp",
+      "text": "Agua, tierra, luz y aire: los cuatro elementos que nos dieron origen. ✨",
+      "href": "",
+      "alt": "Naturaleza y bienestar Verderapia"
+    }
   ]
 }

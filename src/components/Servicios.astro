@@ -1,0 +1,174 @@
+---
+import { getServicios } from '../data/servicios';
+
+const servicios = await getServicios();
+---
+
+{servicios.length > 0 && (
+  <section class="servicios section" id="servicios" aria-labelledby="servicios-title">
+    <div class="container">
+      <header class="servicios__head" data-reveal>
+        <p class="eyebrow">Talleres y Servicios</p>
+        <h2 id="servicios-title">Horarios y precios</h2>
+      </header>
+
+      <div class="servicios__grid">
+        {servicios.map((s) => (
+          <article class="servicio-card" data-reveal>
+            {s.imagen && (
+              <div class="servicio-card__media">
+                <img src={s.imagen} alt={s.nombre} loading="lazy" decoding="async" />
+              </div>
+            )}
+            <div class="servicio-card__body">
+              <h3>{s.nombre}</h3>
+              {s.descripcion && <p class="servicio-card__desc">{s.descripcion}</p>}
+
+              {s.horarios.length > 0 && (
+                <div class="servicio-card__block">
+                  <h4>Horarios</h4>
+                  <ul class="servicio-card__horarios">
+                    {s.horarios.map((d) => (
+                      <li>
+                        <span class="servicio-card__dia">{d.dia}</span>
+                        <span class="servicio-card__clases">
+                          {d.clases.map((c) => (
+                            <span class="servicio-card__clase">
+                              <em>{c.hora}</em> {c.nombre}
+                            </span>
+                          ))}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {s.precios.length > 0 && (
+                <div class="servicio-card__block">
+                  <h4>Precios</h4>
+                  <ul class="servicio-card__precios">
+                    {s.precios.map((p) => (
+                      <li>
+                        <span>
+                          {p.nombre}
+                          {p.detalle && <em> · {p.detalle}</em>}
+                        </span>
+                        <strong>{p.valor}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {s.nota && <p class="servicio-card__nota muted">{s.nota}</p>}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .servicios__head {
+    max-width: 640px;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+  .servicios__head h2 {
+    margin-top: 0.7rem;
+  }
+  .servicios__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: clamp(1.2rem, 3vw, 2rem);
+  }
+  .servicio-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .servicio-card__media {
+    overflow: hidden;
+  }
+  .servicio-card__media img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .servicio-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    padding: clamp(1.4rem, 2.8vw, 2rem);
+  }
+  .servicio-card__body h3 {
+    font-size: 1.4rem;
+  }
+  .servicio-card__desc {
+    color: var(--ink-soft);
+    font-size: 0.95rem;
+  }
+  .servicio-card__block h4 {
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.7rem;
+  }
+  .servicio-card__horarios {
+    border-top: 1px solid var(--line);
+  }
+  .servicio-card__horarios li {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+    gap: 1rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .servicio-card__dia {
+    font-weight: 700;
+    color: var(--brand);
+  }
+  .servicio-card__clases {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+  .servicio-card__clase em {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--accent-2);
+    margin-right: 0.3rem;
+  }
+  .servicio-card__precios li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .servicio-card__precios li:last-child {
+    border-bottom: 0;
+  }
+  .servicio-card__precios em {
+    font-style: normal;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .servicio-card__precios strong {
+    font-family: var(--font-display);
+    color: var(--brand);
+    font-size: 1.15rem;
+    white-space: nowrap;
+  }
+  .servicio-card__nota {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+  }
+</style>

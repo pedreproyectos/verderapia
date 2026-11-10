@@ -1,0 +1,18 @@
+nombre: Lombricultura
+descripcion: >-
+  Aprende a reciclar los desechos orgánicos de tu casa. Parte teórica y práctica
+  de aproximadamente 3 horas.
+imagen: /images/verderapia/lombricultura/imagen.webp
+horarios:
+  - dia: Sábado
+    clases:
+      - hora: 15:30 a 18:30
+        nombre: Taller de Lombricultura
+precios:
+  - nombre: Taller de Lombricultura
+    detalle: aprox. 3 horas
+    valor: $15.000 · $25.000 acompañad@
+nota: >-
+  Expositor: ECOFEN ANTU — Luis Estay. Temas: ¿Qué es la lombricultura?,
+  características de la lombriz roja californiana, desechos que se pueden
+  utilizar para el proceso, estructura y sistema de alimentación.
