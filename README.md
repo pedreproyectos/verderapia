@@ -3,6 +3,8 @@
 Sitio one-page de Verderapia (Astro + Tailwind), con **Keystatic** como CMS y
 deploy en **Cloudflare Workers**.
 
+<!-- Prueba de trigger de deploy -->
+
 ## Desarrollo
 
 ```sh
