@@ -43,7 +43,7 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
               <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
             </div>
             <div class="instagram__caption">
-              <p class="instagram__text">{p.text ?? ''}</p>
+              {p.text && <p class="instagram__text">{p.text}</p>}
               <span class="instagram__link">Ver publicación →</span>
             </div>
           </a>

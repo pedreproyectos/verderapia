@@ -46,8 +46,9 @@ external: true
 
 - **Novedades / blog**: `src/content/posts/*.mdoc` (Markdoc). Se ven en `/posts`
   y en la sección Novedades de la home.
-- **Feed de Instagram**: embed oficial de la cuenta en `src/data/instagram.json`
-  (`embed_src`). Se actualiza automáticamente con las publicaciones reales.
+- **Feed de Instagram**: se obtiene de un feed JSON de Behold
+  (`INSTAGRAM_FEED_URL`) o de la API de Instagram (`INSTAGRAM_ACCESS_TOKEN` +
+  `INSTAGRAM_BUSINESS_ID`). Si no hay ninguno, usa `src/data/instagram.json`.
 - **Call to actions**: `src/content/ctas/*.yaml`.
 - **Datos del negocio**: `src/data/site.ts` (textos fijos que no están en el CMS).
 
@@ -103,6 +104,7 @@ En **Settings → Variables and Secrets** del Worker.
 | `KEYSTATIC_REPO` | `pedreproyectos/verderapia` |
 | `KEYSTATIC_STORAGE` | `github` (opcional; el build ya usa producción) |
 | `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG` | slug de la GitHub App |
+| `INSTAGRAM_FEED_URL` | URL del feed JSON de Behold (opcional) |
 | `NODE_VERSION` | `22.12.0` (opcional) |
 
 > `pnpm build` ejecuta `scripts/keystatic-mode.mjs --production`, que escribe
