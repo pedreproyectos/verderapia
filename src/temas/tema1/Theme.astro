@@ -6,7 +6,6 @@ import Historia from '../../components/Historia.astro';
 import Pilares from '../../components/Pilares.astro';
 import Terapias from '../../components/Terapias.astro';
 import Servicios from '../../components/Servicios.astro';
-import PostsSection from '../../components/PostsSection.astro';
 import InstagramFeed from '../../components/InstagramFeed.astro';
 import GiftCard from '../../components/GiftCard.astro';
 import Contacto from '../../components/Contacto.astro';
@@ -91,8 +90,8 @@ const isWhatsApp = (href: string) => /wa\.me|whatsapp/i.test(href);
   <!-- SERVICIOS -->
   <Servicios />
 
-  <!-- NOVEDADES -->
-  <PostsSection />
+  <!-- NOVEDADES: oculta temporalmente del home. Para mostrarla de nuevo,
+       importa PostsSection y vuelve a colocar <PostsSection /> aquí. -->
 
   <!-- INSTAGRAM -->
   <InstagramFeed />
@@ -155,11 +154,25 @@ const isWhatsApp = (href: string) => /wa\.me|whatsapp/i.test(href);
     width: fit-content;
     max-width: min(640px, 90%);
     padding: clamp(1rem, 2.4vw, 1.5rem) clamp(1.2rem, 3vw, 1.8rem);
-    background: rgba(18, 30, 22, 0.45);
-    backdrop-filter: blur(16px) saturate(1.1);
-    -webkit-backdrop-filter: blur(16px) saturate(1.1);
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    background: rgba(16, 28, 20, 0.62);
+    backdrop-filter: blur(18px) saturate(1.15);
+    -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    border: 1px solid rgba(255, 255, 255, 0.24);
     border-radius: 16px;
+    box-shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+  }
+  /* Refuerzo la legibilidad del texto sobre imágenes claras. */
+  .hero :global(.slider__eyebrow),
+  .hero :global(.slider__title) {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 2px 14px rgba(0, 0, 0, 0.45);
+  }
+  /* La descripción va un punto más clara y con menos sombra que el título. */
+  .hero :global(.slider__text) {
+    color: #fff;
+    font-size: clamp(1.2rem, 1.6vw, 1.35rem);
+    font-weight: 500;
+    line-height: 1.5;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
   }
   /* El CTA vive en su propia fila al pie del hero, alineado a la izquierda
      igual que el texto de la diapositiva. */
@@ -202,7 +215,7 @@ const isWhatsApp = (href: string) => /wa\.me|whatsapp/i.test(href);
 
   /* Fondos alternados para dar ritmo visual */
   :global([data-tema='1'] #terapias),
-  :global([data-tema='1'] #instagram) {
+  :global([data-tema='1'] #novedades) {
     background: var(--bg-2);
   }
   :global([data-tema='1'] #giftcard) {

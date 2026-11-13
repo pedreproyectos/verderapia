@@ -20,10 +20,15 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
 
 <section
   class:list={['instagram', 'section', className]}
-  id="instagram"
-  aria-label={`Publicaciones de Instagram de @${username}`}
+  id="novedades"
+  aria-labelledby="novedades-title"
 >
   <div class="container">
+    <header class="instagram__head" data-reveal>
+      <p class="eyebrow">Instagram</p>
+      <h2 id="novedades-title">Novedades</h2>
+    </header>
+
     {items.length > 0 ? (
       <div class="instagram__grid">
         {items.map((p) => (
@@ -53,6 +58,10 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
 </section>
 
 <style>
+  .instagram__head {
+    max-width: 640px;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
   .instagram__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
