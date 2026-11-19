@@ -211,8 +211,34 @@ Al desplegar con `npx wrangler deploy`, Cloudflare intenta crearlos. Si la zona
 todavía no está activa, el deploy falla: en ese caso agrégalos primero desde el
 dashboard.
 
-`src/middleware.ts` redirige `www.verderapia.cl` a `verderapia.cl` con un 301
-para evitar contenido duplicado.
+### Redirigir `www` a `verderapia.cl`
+
+El middleware de Astro solo se ejecuta en rutas dinámicas (Keystatic, API). Las
+páginas generadas en el build (`/`, `/posts/...`) las sirve directamente el
+binding de assets de Cloudflare, sin pasar por el middleware. Por eso el
+redirect de `www` debe hacerse en la zona, no en Astro.
+
+En Cloudflare Dashboard → `verderapia.cl` → **Rules** → **Redirect Rules** →
+**Create rule**:
+
+- **When incoming requests match**: `Custom filter expression`
+  - Field: `Hostname`, Operator: `equals`, Value: `www.verderapia.cl`
+- **Then**:
+  - Type: `Dynamic`
+  - Expression: `concat("https://verderapia.cl", http.request.uri.path)`
+  - Status code: `301`
+  - Preserve query string: activado
+
+Guarda y prueba:
+
+```sh
+curl -sI https://www.verderapia.cl/posts/ | grep -iE 'HTTP/|location'
+```
+
+Debe responder `301` con `location: https://verderapia.cl/posts/`.
+
+`src/middleware.ts` mantiene el mismo redirect para las rutas dinámicas, como
+respaldo si la regla de la zona no está configurada.
 
 ## 7. Verificar
 

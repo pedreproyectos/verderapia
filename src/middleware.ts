@@ -9,6 +9,9 @@ let bridged = false;
  */
 export const onRequest = defineMiddleware(async (context, next) => {
   // Canonicaliza el dominio: www.verderapia.cl → verderapia.cl.
+  // Solo cubre rutas dinámicas; las páginas prerenderizadas las sirve el
+  // binding de assets sin pasar por el middleware. Para cubrirlas todas hace
+  // falta una Redirect Rule en la zona de Cloudflare (ver README).
   const url = new URL(context.request.url);
   if (
     url.hostname === 'www.verderapia.cl' &&
