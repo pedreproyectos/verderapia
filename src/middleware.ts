@@ -7,7 +7,17 @@ let bridged = false;
  * pero Keystatic los busca en `process.env`. En la primera petición copiamos
  * los valores de texto (variables y secretos) a `process.env`.
  */
-export const onRequest = defineMiddleware(async (_context, next) => {
+export const onRequest = defineMiddleware(async (context, next) => {
+  // Canonicaliza el dominio: www.verderapia.cl → verderapia.cl.
+  const url = new URL(context.request.url);
+  if (
+    url.hostname === 'www.verderapia.cl' &&
+    (context.request.method === 'GET' || context.request.method === 'HEAD')
+  ) {
+    url.hostname = 'verderapia.cl';
+    return context.redirect(url.toString(), 301);
+  }
+
   if (!bridged) {
     bridged = true;
     try {

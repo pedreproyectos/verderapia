@@ -49,6 +49,12 @@ external: true
 - **Feed de Instagram**: se obtiene de un feed JSON de Behold
   (`INSTAGRAM_FEED_URL`) o de la API de Instagram (`INSTAGRAM_ACCESS_TOKEN` +
   `INSTAGRAM_BUSINESS_ID`). Si no hay ninguno, usa `src/data/instagram.json`.
+- **Actualización de Instagram**: la home se genera en el build, pero
+  `/api/instagram` entrega el feed en vivo y el navegador reemplaza las tarjetas
+  al cargar la página. Así los posts nuevos aparecen sin volver a desplegar. La
+  respuesta se cachea 3 horas para no agotar las 1.200 vistas mensuales de
+  Behold. El plan free de Behold refresca su feed una vez al día; para
+  actualizaciones cada hora se necesita el plan Starter.
 - **Call to actions**: `src/content/ctas/*.yaml`.
 - **Datos del negocio**: `src/data/site.ts` (textos fijos que no están en el CMS).
 
@@ -67,10 +73,14 @@ de servidor para Keystatic (OAuth/API de GitHub). El build genera:
 
 ```jsonc
 {
-  "name": "verde",
+  "name": "verderapia",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "compatibility_flags": ["nodejs_compat"],
-  "assets": { "directory": "./dist", "binding": "ASSETS" }
+  "assets": { "directory": "./dist", "binding": "ASSETS" },
+  "routes": [
+    { "pattern": "verderapia.cl", "custom_domain": true },
+    { "pattern": "www.verderapia.cl", "custom_domain": true }
+  ]
 }
 ```
 
@@ -154,17 +164,68 @@ pnpm build
 npx wrangler deploy
 ```
 
-## 6. Verificar
+## 6. Dominio personalizado
+
+El dominio se conecta desde Cloudflare, no desde el código.
+
+### Requisitos
+
+- `verderapia.cl` registrado.
+- El dominio agregado como **zona** en la misma cuenta de Cloudflare del Worker.
+- Los nameservers del registrador apuntando a Cloudflare.
+
+### Agregar el dominio
+
+1. Cloudflare Dashboard → **Workers & Pages** → Worker `verderapia` →
+   **Settings** → **Domains & Routes**.
+2. Pulsa **Add** → **Custom domain**.
+3. Escribe `verderapia.cl` → **Add domain**.
+4. Repite con `www.verderapia.cl`.
+5. Espera a que ambos aparezcan como **Active**.
+
+Cloudflare crea el registro DNS y el certificado SSL automáticamente.
+
+Si el dominio ya tenía registros DNS `A`, `AAAA` o `CNAME` para `@` o `www`
+(por ejemplo, apuntando a otro hosting), bórralos antes de agregar el custom
+domain. Cloudflare no puede crear el registro mientras exista uno en conflicto.
+
+### Si el dominio aún no está en Cloudflare
+
+1. Cloudflare Dashboard → **Add a site** → `verderapia.cl`.
+2. Copia los nameservers que te entrega Cloudflare.
+3. Cámbialos en el registrador del dominio.
+4. Espera la propagación y luego agrega el **Custom domain** al Worker.
+
+### Configuración en el repositorio
+
+`wrangler.jsonc` ya declara los dos dominios:
+
+```jsonc
+"routes": [
+  { "pattern": "verderapia.cl", "custom_domain": true },
+  { "pattern": "www.verderapia.cl", "custom_domain": true }
+]
+```
+
+Al desplegar con `npx wrangler deploy`, Cloudflare intenta crearlos. Si la zona
+todavía no está activa, el deploy falla: en ese caso agrégalos primero desde el
+dashboard.
+
+`src/middleware.ts` redirige `www.verderapia.cl` a `verderapia.cl` con un 301
+para evitar contenido duplicado.
+
+## 7. Verificar
 
 1. `https://verderapia.cl/` carga la home.
-2. `https://verderapia.cl/keystatic` carga el panel y permite iniciar sesión con
+2. `https://www.verderapia.cl/` responde **301 → https://verderapia.cl/**.
+3. `https://verderapia.cl/keystatic` carga el panel y permite iniciar sesión con
    GitHub.
-3. Edita un CTA y guarda: Keystatic crea un commit en el repo y Cloudflare
+4. Edita un CTA y guarda: Keystatic crea un commit en el repo y Cloudflare
    vuelve a construir el sitio.
-4. `https://verderapia.cl/admin` responde **301 → /keystatic**.
-5. `/posts/...` y el feed de Instagram funcionan.
+5. `https://verderapia.cl/admin` responde **301 → /keystatic**.
+6. `/posts/...` y el feed de Instagram funcionan.
 
-## 7. Deploy manual desde local (opcional)
+## 8. Deploy manual desde local (opcional)
 
 ```sh
 pnpm install

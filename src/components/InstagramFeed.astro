@@ -22,6 +22,9 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
   class:list={['instagram', 'section', className]}
   id="novedades"
   aria-labelledby="novedades-title"
+  data-instagram-feed
+  data-username={username}
+  data-profile-url={profileUrl}
 >
   <div class="container">
     <header class="instagram__head" data-reveal>
@@ -29,33 +32,106 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
       <h2 id="novedades-title">Novedades</h2>
     </header>
 
-    {items.length > 0 ? (
-      <div class="instagram__grid">
-        {items.map((p) => (
-          <a
-            class="instagram__card"
-            href={p.href || profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={p.alt || `Publicación de Instagram de @${username}`}
-          >
-            <div class="instagram__media">
-              <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
-            </div>
-            <div class="instagram__caption">
-              {p.text && <p class="instagram__text">{p.text}</p>}
-              <span class="instagram__link">Ver publicación →</span>
-            </div>
-          </a>
-        ))}
-      </div>
-    ) : (
-      <p class="instagram__empty muted">
+    <div class="instagram__grid" data-instagram-grid>
+      {items.map((p) => (
+        <a
+          class="instagram__card"
+          href={p.href || profileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={p.alt || `Publicación de Instagram de @${username}`}
+        >
+          <div class="instagram__media">
+            <img src={p.image} alt={p.alt ?? ''} loading="lazy" decoding="async" />
+          </div>
+          <div class="instagram__caption">
+            {p.text && <p class="instagram__text">{p.text}</p>}
+            <span class="instagram__link">Ver publicación →</span>
+          </div>
+        </a>
+      ))}
+    </div>
+    {items.length === 0 && (
+      <p class="instagram__empty muted" data-instagram-empty>
         Aún no hay publicaciones. Agrégalas en <code>src/data/instagram.json</code>.
       </p>
     )}
   </div>
 </section>
+
+<script>
+  type FeedPost = {
+    image: string;
+    text?: string;
+    href?: string;
+    alt?: string;
+  };
+
+  const section = document.querySelector<HTMLElement>('[data-instagram-feed]');
+  const grid = section?.querySelector<HTMLElement>('[data-instagram-grid]');
+  const username = section?.dataset.username ?? 'verderapia';
+  const profileUrl = section?.dataset.profileUrl ?? '#';
+
+  function renderCard(post: FeedPost): HTMLAnchorElement {
+    const card = document.createElement('a');
+    card.className = 'instagram__card';
+    card.href = post.href || profileUrl;
+    card.target = '_blank';
+    card.rel = 'noopener noreferrer';
+    card.setAttribute(
+      'aria-label',
+      post.alt || `Publicación de Instagram de @${username}`,
+    );
+
+    const media = document.createElement('div');
+    media.className = 'instagram__media';
+
+    const img = document.createElement('img');
+    img.src = post.image;
+    img.alt = post.alt ?? '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    media.append(img);
+
+    const caption = document.createElement('div');
+    caption.className = 'instagram__caption';
+
+    if (post.text) {
+      const text = document.createElement('p');
+      text.className = 'instagram__text';
+      text.textContent = post.text;
+      caption.append(text);
+    }
+
+    const link = document.createElement('span');
+    link.className = 'instagram__link';
+    link.textContent = 'Ver publicación →';
+    caption.append(link);
+
+    card.append(media, caption);
+    return card;
+  }
+
+  // Actualiza las tarjetas con el feed en vivo, sin depender de un despliegue.
+  if (section && grid) {
+    void fetch('/api/instagram', { headers: { accept: 'application/json' } })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { posts?: FeedPost[] } | null) => {
+        const posts = (data?.posts ?? []).filter((post) => post.image);
+        if (posts.length === 0) return;
+
+        const firstCard = grid.querySelector('.instagram__card');
+        const firstHref = firstCard?.getAttribute('href') ?? '';
+        if (firstHref === (posts[0].href || profileUrl)) return;
+
+        grid.replaceChildren(...posts.map(renderCard));
+        section.querySelector('[data-instagram-empty]')?.remove();
+      })
+      .catch(() => {
+        // Si falla la actualización, se mantiene el HTML generado en el build.
+      });
+  }
+</script>
 
 <style>
   .instagram__head {

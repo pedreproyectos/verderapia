@@ -27,7 +27,7 @@ type BeholdFeed = {
 };
 
 /** Lee un feed JSON de Behold y lo adapta al formato que usa el sitio. */
-async function getBeholdPosts(url: string): Promise<InstaPost[] | null> {
+export async function getBeholdPosts(url: string): Promise<InstaPost[] | null> {
   try {
     const res = await fetch(url);
     if (!res.ok) {
@@ -70,10 +70,12 @@ async function getBeholdPosts(url: string): Promise<InstaPost[] | null> {
  *   2. Instagram Graph API (`INSTAGRAM_ACCESS_TOKEN` + `INSTAGRAM_BUSINESS_ID`).
  *   3. Respaldo estático de `instagram.json`.
  */
-export async function getInstagramPosts(): Promise<InstaPost[]> {
+export async function getInstagramPosts(
+  options: { skipBehold?: boolean } = {},
+): Promise<InstaPost[]> {
   const feedUrl = process.env.INSTAGRAM_FEED_URL || instagramConfig.feed_url;
 
-  if (feedUrl) {
+  if (!options.skipBehold && feedUrl) {
     const beholdPosts = await getBeholdPosts(feedUrl);
     if (beholdPosts) return beholdPosts;
   }
