@@ -191,6 +191,20 @@ En GitHub → **Settings → Developer settings → GitHub Apps → New GitHub A
    `https://github.com/settings/apps/<slug>` → ese es
    `PUBLIC_KEYSTATIC_GITHUB_APP_SLUG`.
 
+### Agregar personas que editan contenido
+
+Keystatic no tiene usuarios propios: en modo GitHub, **quien puede editar es
+quien tiene permiso de escritura en el repositorio**. Para habilitar a alguien:
+
+1. Debe tener una cuenta de GitHub.
+2. En el repositorio, entra a **Settings → Manage access → Add people** y agrega
+   su usuario con el rol **Write**.
+3. La persona entra a `https://verderapia.cl/keystatic`, pulsa **Log in with
+   GitHub** y autoriza la GitHub App la primera vez.
+
+Los cambios que guarde se commitean a `master` y Cloudflare reconstruye el sitio
+automáticamente. Para revocar el acceso, quita la persona del repositorio.
+
 ## 5. Desplegar
 
 Con las variables cargadas:
