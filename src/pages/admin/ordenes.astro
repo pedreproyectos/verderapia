@@ -5,6 +5,7 @@ import {
   adminAutorizado,
   adminChallenge,
   formatPrecio,
+  getCursosServidor,
   getEnv,
   type Order,
 } from '../../lib/paywall';
@@ -38,6 +39,7 @@ const filas = await db
 const ordenes = filas.results ?? [];
 const ok = Astro.url.searchParams.get('ok');
 const error = Astro.url.searchParams.get('error');
+const cursos = getCursosServidor();
 
 const totalPagadas = ordenes.filter((o) => o.status === 'paid').length;
 const ingresos = ordenes
@@ -194,6 +196,50 @@ const estadoTexto: Record<string, string> = {
         color: #8a2f25;
         border-color: #e0b8b2;
       }
+      .manual {
+        margin-bottom: 1.6rem;
+        padding: 1rem 1.1rem;
+        background: #fff;
+        border: 1px solid #e2ddcf;
+        border-radius: 14px;
+      }
+      .manual h2 {
+        margin: 0 0 0.2rem;
+        font-size: 1rem;
+      }
+      .manual p {
+        margin: 0 0 0.8rem;
+        color: #666;
+        font-size: 0.84rem;
+      }
+      .manual__form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .manual__form input,
+      .manual__form select {
+        padding: 0.55rem 0.7rem;
+        font: inherit;
+        font-size: 0.85rem;
+        background: #faf8f2;
+        border: 1px solid #d9d1bf;
+        border-radius: 9px;
+      }
+      .manual__form input[type='email'] {
+        min-width: 220px;
+      }
+      .manual__form button {
+        padding: 0.55em 1em;
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #fff;
+        background: #2f5d3a;
+        border: 0;
+        border-radius: 999px;
+        cursor: pointer;
+      }
       .vacio {
         padding: 2rem;
         text-align: center;
@@ -229,6 +275,32 @@ const estadoTexto: Record<string, string> = {
         <div class="tarjeta"><span>Ingresos</span><strong>{formatPrecio(ingresos)}</strong></div>
       </div>
 
+      <section class="manual">
+        <h2>Crear acceso manual</h2>
+        <p>
+          Para ventas por transferencia, efectivo o WhatsApp: registra la orden como pagada
+          y genera el enlace de acceso.
+        </p>
+        {cursos.length === 0 ? (
+          <p class="nota">Primero crea un curso en Keystatic.</p>
+        ) : (
+          <form class="manual__form" method="post" action="/api/admin/acciones">
+            <input type="hidden" name="accion" value="manual" />
+            <input name="email" type="email" required placeholder="correo@ejemplo.cl" />
+            <input name="nombre" type="text" placeholder="Nombre (opcional)" />
+            <select name="curso" required>
+              {cursos.map((curso) => (
+                <option value={curso.id}>
+                  {curso.titulo}
+                  {curso.publicado ? '' : ' (no publicado)'}
+                </option>
+              ))}
+            </select>
+            <button type="submit">Crear acceso</button>
+          </form>
+        )}
+      </section>
+
       {ordenes.length === 0 ? (
         <div class="vacio">Todavía no hay órdenes registradas.</div>
       ) : (
@@ -263,6 +335,13 @@ const estadoTexto: Record<string, string> = {
                 <td>{orden.sesiones}</td>
                 <td>
                   <div class="acciones">
+                    {orden.status === 'paid' && (
+                      <form method="post" action="/api/admin/acciones">
+                        <input type="hidden" name="accion" value="link" />
+                        <input type="hidden" name="order_id" value={orden.id} />
+                        <button type="submit">Nuevo enlace</button>
+                      </form>
+                    )}
                     <form method="post" action="/api/admin/acciones">
                       <input type="hidden" name="accion" value="resend" />
                       <input type="hidden" name="order_id" value={orden.id} />
