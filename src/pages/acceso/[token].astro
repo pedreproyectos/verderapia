@@ -1,0 +1,113 @@
+---
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Footer from '../../components/Footer.astro';
+import {
+  crearSesion,
+  getEnv,
+  getOrden,
+  getTokenPorValor,
+} from '../../lib/paywall';
+
+const navLinks = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Cursos', href: '/cursos/' },
+  { label: 'Contacto', href: '/#contacto' },
+];
+
+const env = await getEnv(Astro.locals);
+const token = Astro.params.token ?? '';
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'no-store');
+
+let estado: 'ok' | 'invalido' | 'expirado' | 'sin-db' | 'sin-pago' = 'invalido';
+
+if (!env.DB) {
+  estado = 'sin-db';
+} else if (token) {
+  const fila = await getTokenPorValor(env.DB, token);
+  if (fila) {
+    if (new Date(fila.expires_at).getTime() < Date.now()) {
+      estado = 'expirado';
+    } else {
+      const order = await getOrden(env.DB, fila.order_id);
+      if (!order || order.status !== 'paid') {
+        estado = 'sin-pago';
+      } else {
+        const sesion = await crearSesion(env.DB, order, Astro.request.headers.get('user-agent'));
+        Astro.cookies.set('vp_session', sesion.id, {
+          path: '/',
+          httpOnly: true,
+          secure: true,
+          sameSite: 'lax',
+          maxAge: 60 * 60 * 24 * 365,
+        });
+        return Astro.redirect(`/curso/${order.curso_slug}/ver`, 302);
+      }
+    }
+  }
+}
+
+const mensajes: Record<typeof estado, { titulo: string; texto: string }> = {
+  ok: { titulo: 'Acceso listo', texto: '' },
+  invalido: {
+    titulo: 'Enlace no válido',
+    texto:
+      'Este enlace no existe o ya fue reemplazado. Puedes pedir uno nuevo desde la página de acceso.',
+  },
+  expirado: {
+    titulo: 'Enlace vencido',
+    texto:
+      'Por seguridad, los enlaces del correo vencen a los 7 días. Pide uno nuevo y te lo enviamos al instante.',
+  },
+  'sin-db': {
+    titulo: 'Acceso no disponible',
+    texto: 'El sistema de acceso todavía no está configurado. Escríbenos a contacto@verderapia.cl.',
+  },
+  'sin-pago': {
+    titulo: 'Pago no confirmado',
+    texto:
+      'No encontramos un pago confirmado para este enlace. Si ya pagaste, escríbenos a contacto@verderapia.cl y lo revisamos.',
+  },
+};
+
+const mensaje = mensajes[estado];
+---
+
+<Base tema={1} title={`${mensaje.titulo} — Verderapia`} description="Acceso a cursos de Verderapia.">
+  <SiteNav variant="solid" links={navLinks} />
+  <main class="acceso-token">
+    <div class="container container--narrow">
+      <p class="eyebrow">Acceso a cursos</p>
+      <h1>{mensaje.titulo}</h1>
+      <p class="lead">{mensaje.texto}</p>
+      <div class="acceso-token__acciones">
+        <a class="btn" href="/acceso/">Pedir un enlace nuevo</a>
+        <a class="acceso-token__link" href="/cursos/">Ver los cursos</a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .acceso-token {
+    padding-block: clamp(7rem, 12vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .acceso-token h1 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .acceso-token__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.2rem;
+    margin-top: 1.6rem;
+  }
+  .acceso-token__link {
+    font-weight: 700;
+    color: var(--brand);
+  }
+</style>

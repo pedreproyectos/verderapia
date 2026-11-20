@@ -15,5 +15,13 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS"
-  }
+  },
+  // Base de datos del paywall (órdenes, accesos y sesiones).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "verderapia-paywall",
+      "database_id": "d227a3c5-9e26-44c6-87d4-60c56ab0fe42"
+    }
+  ]
 }

@@ -121,6 +121,42 @@ const terapias = defineCollection({
   }),
 });
 
+/** Cursos en video (asincrónicos). Editables desde Keystatic. */
+const cursos = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/cursos' }),
+  schema: z.object({
+    titulo: z.string(),
+    resumen: z.string().optional(),
+    descripcion: z.string().optional(),
+    precio: z.number(),
+    moneda: z.string().default('CLP'),
+    publicado: z.boolean().default(false),
+    orden: z.number().default(0),
+    portada: z.string().optional(),
+    previewVimeoId: z.string().optional(),
+    partes: z
+      .array(
+        z.object({
+          titulo: z.string(),
+          descripcion: z.string().optional(),
+          videos: z
+            .array(
+              z.object({
+                videoId: z.string().optional(),
+                titulo: z.string(),
+                vimeoId: z.string().optional(),
+                vimeoHash: z.string().optional(),
+                duracionMin: z.number().default(0),
+                descripcion: z.string().optional(),
+              }),
+            )
+            .default([]),
+        }),
+      )
+      .default([]),
+  }),
+});
+
 /** Call to actions del sitio. Editables desde Keystatic (/keystatic).
  * Uno puede marcarse como `principal` (aparece arriba); el resto se
  * ordena con `order`.
@@ -145,4 +181,5 @@ export const collections = {
   giftcard,
   servicios,
   terapias,
+  cursos,
 };

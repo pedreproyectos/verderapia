@@ -1,0 +1,104 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Footer from '../../components/Footer.astro';
+
+const navLinks = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Cursos', href: '/cursos/' },
+  { label: 'Novedades', href: '/posts/' },
+  { label: 'Contacto', href: '/#contacto' },
+];
+---
+
+<Base
+  tema={1}
+  title="Recuperar acceso — Verderapia"
+  description="Pide nuevamente el enlace de acceso a tus cursos."
+>
+  <SiteNav variant="solid" links={navLinks} />
+  <main class="acceso">
+    <div class="container container--narrow">
+      <header class="acceso__head">
+        <p class="eyebrow">Acceso a cursos</p>
+        <h1>Recupera tu enlace</h1>
+        <p class="lead">
+          Escribe el correo con el que compraste. Si hay una compra registrada, te enviamos
+          un enlace nuevo para entrar a tu curso.
+        </p>
+      </header>
+
+      <form class="acceso__form" method="post" action="/api/acceso/reenviar">
+        <label for="email">Correo electrónico</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder="tu@correo.cl"
+        />
+        <button class="btn" type="submit">Enviar enlace</button>
+      </form>
+
+      <p class="acceso__nota">
+        El enlace del correo vence a los 7 días por seguridad. El acceso al curso, en cambio,
+        no vence.
+      </p>
+
+      <p class="acceso__back"><a href="/cursos/">← Ver los cursos</a></p>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .acceso {
+    padding-block: clamp(7rem, 12vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .acceso__head {
+    max-width: 620px;
+    margin-bottom: 2rem;
+  }
+  .acceso__head h1 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .acceso__form {
+    display: grid;
+    gap: 0.8rem;
+    max-width: 440px;
+    padding: 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .acceso__form label {
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .acceso__form input {
+    padding: 0.8rem 1rem;
+    font: inherit;
+    color: inherit;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .acceso__form .btn {
+    margin-top: 0.4rem;
+    justify-self: start;
+  }
+  .acceso__nota {
+    max-width: 480px;
+    margin-top: 1.2rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  .acceso__back {
+    margin-top: 2rem;
+    font-weight: 700;
+  }
+  .acceso__back a {
+    color: var(--brand);
+  }
+</style>

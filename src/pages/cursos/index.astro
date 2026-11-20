@@ -1,0 +1,187 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Footer from '../../components/Footer.astro';
+import {
+  getCursos,
+  formatPrecio,
+  contarVideos,
+  duracionTotalMin,
+  formatDuracion,
+} from '../../data/cursos';
+
+const cursos = await getCursos();
+
+const navLinks = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Cursos', href: '/cursos/' },
+  { label: 'Novedades', href: '/posts/' },
+  { label: 'Contacto', href: '/#contacto' },
+];
+---
+
+<Base
+  tema={1}
+  title="Cursos en video — Verderapia"
+  description="Cursos asincrónicos de Verderapia: terapias, tarot, arte y bienestar para hacer a tu ritmo."
+>
+  <SiteNav variant="solid" links={navLinks} />
+  <main class="cursos">
+    <div class="container">
+      <header class="cursos__head">
+        <p class="eyebrow">Cursos</p>
+        <h1>Aprende a tu ritmo</h1>
+        <p class="lead">
+          Cursos en video, asincrónicos: los ves cuando quieras, desde donde estés.
+          Cada curso se organiza en dos partes y el acceso queda para siempre.
+        </p>
+      </header>
+
+      {cursos.length === 0 ? (
+        <div class="cursos__vacio">
+          <p>Estamos preparando los primeros cursos.</p>
+          <p>
+            Escríbenos y te avisamos en cuanto estén disponibles.
+            <a href="/#contacto">Ir a contacto</a>
+          </p>
+        </div>
+      ) : (
+        <div class="cursos__grid">
+          {cursos.map((curso) => {
+            const videos = contarVideos(curso);
+            const duracion = formatDuracion(duracionTotalMin(curso));
+            return (
+              <article class="curso-card">
+                <a class="curso-card__media" href={`/cursos/${curso.id}`} aria-label={curso.titulo}>
+                  {curso.portada ? (
+                    <img src={curso.portada} alt="" loading="lazy" decoding="async" />
+                  ) : (
+                    <span class="curso-card__placeholder" aria-hidden="true">Verderapia</span>
+                  )}
+                </a>
+                <div class="curso-card__body">
+                  <h2><a href={`/cursos/${curso.id}`}>{curso.titulo}</a></h2>
+                  {curso.resumen && <p class="curso-card__resumen">{curso.resumen}</p>}
+                  <p class="curso-card__meta">
+                    {curso.partes.length} partes · {videos} {videos === 1 ? 'video' : 'videos'}
+                    {duracion ? ` · ${duracion}` : ''}
+                  </p>
+                  <div class="curso-card__foot">
+                    <strong>{formatPrecio(curso.precio, curso.moneda)}</strong>
+                    <a class="btn" href={`/cursos/${curso.id}`}>Ver curso</a>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
+      <p class="cursos__back"><a href="/">← Volver al inicio</a></p>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .cursos {
+    padding-block: clamp(7rem, 12vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .cursos__head {
+    max-width: 680px;
+    margin-bottom: clamp(2rem, 5vw, 3.2rem);
+  }
+  .cursos__head h1 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .cursos__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: clamp(1.2rem, 3vw, 2rem);
+  }
+  .curso-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .curso-card__media {
+    display: block;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--brand) 12%, var(--surface));
+  }
+  .curso-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .curso-card:hover .curso-card__media img {
+    transform: scale(1.04);
+  }
+  .curso-card__placeholder {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--brand);
+    opacity: 0.7;
+  }
+  .curso-card__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.3rem 1.4rem 1.5rem;
+  }
+  .curso-card__body h2 {
+    font-size: 1.3rem;
+    line-height: 1.25;
+  }
+  .curso-card__resumen {
+    flex: 1;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+  }
+  .curso-card__meta {
+    color: var(--muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+  }
+  .curso-card__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin-top: 0.4rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid var(--line);
+  }
+  .curso-card__foot .btn {
+    padding: 0.6em 1.1em;
+    font-size: 0.82rem;
+  }
+  .cursos__vacio {
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: var(--surface);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .cursos__vacio a {
+    color: var(--brand);
+    font-weight: 700;
+  }
+  .cursos__back {
+    margin-top: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+  }
+  .cursos__back a {
+    color: var(--brand);
+  }
+</style>

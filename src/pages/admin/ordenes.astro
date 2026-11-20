@@ -1,0 +1,290 @@
+---
+export const prerender = false;
+
+import {
+  adminAutorizado,
+  adminChallenge,
+  formatPrecio,
+  getEnv,
+  type Order,
+} from '../../lib/paywall';
+
+const env = await getEnv(Astro.locals);
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'no-store');
+
+if (!adminAutorizado(Astro.request, env)) {
+  return adminChallenge();
+}
+
+const db = env.DB;
+if (!db) {
+  return new Response('Falta el binding DB. Configura D1 antes de usar el panel.', { status: 503 });
+}
+
+type FilaOrden = Order & { sesiones: number };
+
+const filas = await db
+  .prepare(
+    `SELECT o.*,
+            (SELECT COUNT(*) FROM sessions s
+              WHERE s.order_id = o.id AND s.revoked_at IS NULL) AS sesiones
+       FROM orders o
+      ORDER BY o.created_at DESC
+      LIMIT 200`,
+  )
+  .all<FilaOrden>();
+
+const ordenes = filas.results ?? [];
+const ok = Astro.url.searchParams.get('ok');
+const error = Astro.url.searchParams.get('error');
+
+const totalPagadas = ordenes.filter((o) => o.status === 'paid').length;
+const ingresos = ordenes
+  .filter((o) => o.status === 'paid')
+  .reduce((suma, o) => suma + o.amount_clp, 0);
+
+const modo = env.PAYMENTS_MODE === 'demo' ? 'demo (sin cobro)' : env.FLOW_API_KEY ? 'Flow' : 'sin pasarela';
+const correo = env.RESEND_API_KEY ? 'configurado' : 'sin configurar (los envíos se registran como omitidos)';
+
+function fecha(valor: string | null): string {
+  if (!valor) return '—';
+  return new Intl.DateTimeFormat('es-CL', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(valor));
+}
+
+const estadoTexto: Record<string, string> = {
+  paid: 'Pagada',
+  pending: 'Pendiente',
+  rejected: 'Rechazada',
+  refunded: 'Reembolsada',
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Órdenes — Verderapia</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+      body {
+        margin: 0;
+        padding: 2rem 1.2rem 4rem;
+        background: #f4f1e9;
+        color: #222;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      .wrap {
+        max-width: 1080px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin: 0 0 0.3rem;
+      }
+      .sub {
+        margin: 0 0 1.4rem;
+        color: #666;
+        font-size: 0.9rem;
+      }
+      .tarjetas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-bottom: 1.6rem;
+      }
+      .tarjeta {
+        flex: 1 1 160px;
+        padding: 0.9rem 1.1rem;
+        background: #fff;
+        border: 1px solid #e2ddcf;
+        border-radius: 14px;
+      }
+      .tarjeta span {
+        display: block;
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #777;
+      }
+      .tarjeta strong {
+        font-size: 1.3rem;
+      }
+      .aviso {
+        margin: 0 0 1.2rem;
+        padding: 0.8rem 1rem;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        background: #e9f2e5;
+        border: 1px solid #c4d8b9;
+      }
+      .aviso.error {
+        background: #fbeceb;
+        border-color: #e8c2be;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border: 1px solid #e2ddcf;
+        border-radius: 14px;
+        overflow: hidden;
+        font-size: 0.86rem;
+      }
+      th,
+      td {
+        padding: 0.65rem 0.7rem;
+        text-align: left;
+        border-bottom: 1px solid #eee8da;
+        vertical-align: top;
+      }
+      th {
+        background: #faf8f2;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #666;
+      }
+      tr:last-child td {
+        border-bottom: 0;
+      }
+      .estado {
+        display: inline-block;
+        padding: 0.15em 0.55em;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .estado-paid {
+        background: #dff0d8;
+        color: #2f5d3a;
+      }
+      .estado-pending {
+        background: #fdf1cf;
+        color: #7a5c10;
+      }
+      .estado-rejected,
+      .estado-refunded {
+        background: #f6d9d5;
+        color: #8a2f25;
+      }
+      .acciones {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+      }
+      .acciones button {
+        padding: 0.35em 0.7em;
+        font: inherit;
+        font-size: 0.75rem;
+        font-weight: 700;
+        background: #fff;
+        border: 1px solid #cfc7b4;
+        border-radius: 999px;
+        cursor: pointer;
+      }
+      .acciones button.peligro {
+        color: #8a2f25;
+        border-color: #e0b8b2;
+      }
+      .vacio {
+        padding: 2rem;
+        text-align: center;
+        color: #777;
+        background: #fff;
+        border: 1px dashed #ddd5c2;
+        border-radius: 14px;
+      }
+      .nota {
+        margin-top: 1.4rem;
+        color: #777;
+        font-size: 0.8rem;
+      }
+      code {
+        font-size: 0.8rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <h1>Órdenes</h1>
+      <p class="sub">
+        Panel de administración · pasarela: <strong>{modo}</strong> · correo: <strong>{correo}</strong>
+      </p>
+
+      {ok === 'enviado' && <div class="aviso">Enlace reenviado al comprador.</div>}
+      {ok === 'revocado' && <div class="aviso">Sesiones revocadas: el comprador deberá pedir un enlace nuevo.</div>}
+      {error === 'orden' && <div class="aviso error">No se pudo reenviar: la orden no está pagada o el curso no existe.</div>}
+
+      <div class="tarjetas">
+        <div class="tarjeta"><span>Órdenes</span><strong>{ordenes.length}</strong></div>
+        <div class="tarjeta"><span>Pagadas</span><strong>{totalPagadas}</strong></div>
+        <div class="tarjeta"><span>Ingresos</span><strong>{formatPrecio(ingresos)}</strong></div>
+      </div>
+
+      {ordenes.length === 0 ? (
+        <div class="vacio">Todavía no hay órdenes registradas.</div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Curso</th>
+              <th>Comprador</th>
+              <th>Monto</th>
+              <th>Estado</th>
+              <th>Sesiones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ordenes.map((orden) => (
+              <tr>
+                <td>{fecha(orden.created_at)}</td>
+                <td>{orden.curso_slug}</td>
+                <td>
+                  {orden.nombre || '—'}
+                  <br />
+                  <small>{orden.email}</small>
+                </td>
+                <td>{formatPrecio(orden.amount_clp, orden.currency)}</td>
+                <td>
+                  <span class={`estado estado-${orden.status}`}>
+                    {estadoTexto[orden.status] ?? orden.status}
+                  </span>
+                </td>
+                <td>{orden.sesiones}</td>
+                <td>
+                  <div class="acciones">
+                    <form method="post" action="/api/admin/acciones">
+                      <input type="hidden" name="accion" value="resend" />
+                      <input type="hidden" name="order_id" value={orden.id} />
+                      <button type="submit">Reenviar acceso</button>
+                    </form>
+                    <form method="post" action="/api/admin/acciones">
+                      <input type="hidden" name="accion" value="revoke" />
+                      <input type="hidden" name="order_id" value={orden.id} />
+                      <button type="submit" class="peligro">Revocar sesiones</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+
+      <p class="nota">
+        Protegido con <code>ADMIN_TOKEN</code> (autenticación básica, usuario <code>admin</code>).
+        Para producción se recomienda además poner esta ruta detrás de Cloudflare Access.
+      </p>
+    </div>
+  </body>
+</html>

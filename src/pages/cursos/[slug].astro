@@ -1,0 +1,452 @@
+---
+import Base from '../../layouts/Base.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import Footer from '../../components/Footer.astro';
+import { site } from '../../data/site';
+import {
+  getCursos,
+  formatPrecio,
+  contarVideos,
+  duracionTotalMin,
+  formatDuracion,
+} from '../../data/cursos';
+
+export async function getStaticPaths() {
+  const cursos = await getCursos();
+  return cursos.map((curso) => ({
+    params: { slug: curso.id },
+    props: { curso },
+  }));
+}
+
+const { curso } = Astro.props;
+
+const videos = contarVideos(curso);
+const duracion = formatDuracion(duracionTotalMin(curso));
+const parrafos = (curso.descripcion ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+
+const navLinks = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Cursos', href: '/cursos/' },
+  { label: 'Novedades', href: '/posts/' },
+  { label: 'Contacto', href: '/#contacto' },
+];
+
+const mensaje = encodeURIComponent(`Hola, quiero inscribirme en el curso "${curso.titulo}".`);
+const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
+---
+
+<Base
+  tema={1}
+  title={`${curso.titulo} — Verderapia`}
+  description={curso.resumen ?? `Curso en video de Verderapia: ${curso.titulo}.`}
+  image={curso.portada}
+>
+  <SiteNav variant="solid" links={navLinks} />
+  <main class="curso">
+    <div class="container container--narrow">
+      <p class="curso__back"><a href="/cursos/">← Todos los cursos</a></p>
+
+      <header class="curso__head">
+        <p class="eyebrow">Curso en video · a tu ritmo</p>
+        <h1>{curso.titulo}</h1>
+        {curso.resumen && <p class="lead">{curso.resumen}</p>}
+        <p class="curso__meta">
+          {curso.partes.length} partes · {videos} {videos === 1 ? 'video' : 'videos'}
+          {duracion ? ` · ${duracion}` : ''} · acceso sin vencimiento
+        </p>
+      </header>
+
+      {curso.portada && (
+        <figure class="curso__cover">
+          <img src={curso.portada} alt={curso.titulo} loading="eager" decoding="async" />
+        </figure>
+      )}
+
+      <div class="curso__compra" id="comprar">
+        <div>
+          <span class="curso__precio-label">Precio del curso</span>
+          <strong class="curso__precio">{formatPrecio(curso.precio, curso.moneda)}</strong>
+          <span class="curso__precio-nota">Pago único · incluye las {curso.partes.length} partes</span>
+        </div>
+        <form class="curso__form" data-checkout>
+          <input type="hidden" name="cursoSlug" value={curso.id} />
+          <div class="curso__form-campos">
+            <label class="sr-only" for="nombre">Tu nombre</label>
+            <input id="nombre" name="nombre" type="text" placeholder="Tu nombre" autocomplete="name" />
+            <label class="sr-only" for="email">Tu correo</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              placeholder="tu@correo.cl"
+              autocomplete="email"
+            />
+          </div>
+          <button class="btn" type="submit">Comprar</button>
+        </form>
+      </div>
+      <p class="curso__aviso" data-checkout-msg>
+        Pago con tarjetas, Webpay o transferencia. Después del pago te llega por correo el
+        enlace de acceso al curso. ¿Prefieres pagar por otro medio?
+        <a href={whatsapp} target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a>.
+      </p>
+      <script>
+        const form = document.querySelector<HTMLFormElement>('[data-checkout]');
+        const mensaje = document.querySelector<HTMLElement>('[data-checkout-msg]');
+        form?.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const boton = form.querySelector<HTMLButtonElement>('button');
+          const datos = new FormData(form);
+          const original = boton?.textContent ?? 'Comprar';
+          if (boton) {
+            boton.disabled = true;
+            boton.textContent = 'Redirigiendo…';
+          }
+          try {
+            const res = await fetch('/api/checkout', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                cursoSlug: datos.get('cursoSlug'),
+                email: datos.get('email'),
+                nombre: datos.get('nombre'),
+              }),
+            });
+            const payload = (await res.json().catch(() => ({}))) as {
+              redirect?: string;
+              error?: string;
+            };
+            if (payload.redirect) {
+              window.location.href = payload.redirect;
+              return;
+            }
+            throw new Error(payload.error ?? 'No pudimos iniciar el pago.');
+          } catch (error) {
+            if (mensaje) {
+              mensaje.textContent =
+                error instanceof Error
+                  ? error.message
+                  : 'No pudimos iniciar el pago. Intenta nuevamente.';
+            }
+          } finally {
+            if (boton) {
+              boton.disabled = false;
+              boton.textContent = original;
+            }
+          }
+        });
+      </script>
+
+      {parrafos.length > 0 && (
+        <div class="curso__texto">
+          {parrafos.map((p) => <p>{p}</p>)}
+        </div>
+      )}
+
+      {curso.previewVimeoId && (
+        <section class="curso__preview" aria-labelledby="preview-title">
+          <h2 id="preview-title">Conoce el curso</h2>
+          <div class="video-frame">
+            <iframe
+              src={`https://player.vimeo.com/video/${curso.previewVimeoId}?dnt=1&title=0&byline=0&portrait=0`}
+              title={`Video de presentación de ${curso.titulo}`}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+            ></iframe>
+          </div>
+        </section>
+      )}
+
+      {curso.partes.length > 0 && (
+        <section class="curso__programa" aria-labelledby="programa-title">
+          <h2 id="programa-title">Programa</h2>
+          <ol class="partes">
+            {curso.partes.map((parte, indice) => (
+              <li class="parte">
+                <div class="parte__head">
+                  <span class="parte__num">{String(indice + 1).padStart(2, '0')}</span>
+                  <h3>{parte.titulo}</h3>
+                </div>
+                {parte.descripcion && <p class="parte__desc">{parte.descripcion}</p>}
+                {parte.videos.length > 0 ? (
+                  <ul class="videos">
+                    {parte.videos.map((video) => (
+                      <li>
+                        <span class="videos__icon" aria-hidden="true">
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </span>
+                        <span class="videos__titulo">{video.titulo}</span>
+                        {video.duracionMin > 0 && (
+                          <span class="videos__dur">{video.duracionMin} min</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="parte__vacio">Videos en preparación.</p>
+                )}
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+
+      <section class="curso__faq" aria-labelledby="faq-title">
+        <h2 id="faq-title">Cómo funciona</h2>
+        <dl>
+          <dt>¿Es en vivo?</dt>
+          <dd>No. Es un curso asincrónico: ves los videos cuando quieras, a tu ritmo.</dd>
+          <dt>¿Cuánto dura el acceso?</dt>
+          <dd>Sin vencimiento. Una vez que recibes el enlace, el acceso queda activo.</dd>
+          <dt>¿Cómo recibo el curso?</dt>
+          <dd>
+            Después del pago te llega un correo con un enlace personal. Al abrirlo se activa
+            tu acceso y puedes ver las dos partes.
+          </dd>
+          <dt>¿Puedo compartir mi acceso?</dt>
+          <dd>El enlace es personal. Si lo compartes, cualquiera podría entrar.</dd>
+        </dl>
+      </section>
+
+      <div class="curso__final">
+        <a class="btn" href={whatsapp} target="_blank" rel="noopener noreferrer">
+          Quiero inscribirme
+        </a>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .curso {
+    padding-block: clamp(7rem, 12vw, 9rem) clamp(3rem, 6vw, 5rem);
+  }
+  .curso__back {
+    margin-bottom: 1.6rem;
+    font-weight: 700;
+  }
+  .curso__back a {
+    color: var(--brand);
+  }
+  .curso__head {
+    margin-bottom: 1.6rem;
+  }
+  .curso__head h1 {
+    margin: 0.7rem 0 0.9rem;
+  }
+  .curso__meta {
+    margin-top: 0.9rem;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .curso__cover {
+    margin: 0 0 1.8rem;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+  .curso__cover img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+  .curso__compra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.2rem 1.4rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .curso__precio-label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .curso__precio {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    line-height: 1.1;
+  }
+  .curso__precio-nota {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .curso__aviso {
+    margin-top: 0.9rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  .curso__aviso a {
+    color: var(--brand);
+    font-weight: 700;
+  }
+  .curso__form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .curso__form-campos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .curso__form input {
+    padding: 0.7rem 0.9rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: inherit;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+  .curso__form input[type='email'] {
+    min-width: 210px;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+  .curso__texto {
+    margin-top: 2rem;
+    color: var(--ink-soft);
+  }
+  .curso__texto p {
+    margin-bottom: 1rem;
+  }
+  .curso__preview,
+  .curso__programa {
+    margin-top: 2.6rem;
+  }
+  .curso__preview h2,
+  .curso__programa h2,
+  .curso__faq h2 {
+    margin-bottom: 1rem;
+    font-size: 1.6rem;
+  }
+  .video-frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: var(--radius-lg);
+  }
+  .video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .partes {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .parte {
+    padding: 1.2rem 1.3rem;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+  }
+  .parte__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+  }
+  .parte__num {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--brand);
+    opacity: 0.7;
+  }
+  .parte__head h3 {
+    font-size: 1.2rem;
+  }
+  .parte__desc {
+    margin-top: 0.5rem;
+    color: var(--ink-soft);
+    font-size: 0.94rem;
+  }
+  .videos {
+    display: grid;
+    gap: 0.15rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .videos li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .videos li:first-child {
+    border-top: 0;
+  }
+  .videos__icon {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+    color: var(--brand);
+    background: color-mix(in srgb, var(--brand) 12%, transparent);
+    border-radius: 999px;
+  }
+  .videos__titulo {
+    flex: 1;
+    font-size: 0.94rem;
+  }
+  .videos__dur {
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+  .parte__vacio {
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  .curso__faq {
+    margin-top: 2.6rem;
+  }
+  .curso__faq dl {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .curso__faq dt {
+    font-weight: 700;
+  }
+  .curso__faq dd {
+    margin: 0.2rem 0 0;
+    color: var(--ink-soft);
+  }
+  .curso__final {
+    margin-top: 2.4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+</style>

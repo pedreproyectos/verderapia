@@ -321,6 +321,78 @@ pnpm deploy        # build + wrangler deploy
 
 `pnpm deploy` equivale a `pnpm build && wrangler deploy`.
 
+## Cursos y paywall
+
+Cursos asincrónicos en video (Vimeo), con pago único por curso y entrega del
+acceso por correo.
+
+### Contenido
+
+Se administra en **Keystatic → Cursos**. Cada curso tiene dos partes y cada parte
+sus videos (`vimeoId` + `vimeoHash`). Los videos deben estar en Vimeo con
+privacidad *Unlisted*, *Embed only* y dominio permitido `verderapia.cl`.
+
+El precio se define en CLP (IVA incluido) y el curso no aparece hasta marcar
+**Publicado**.
+
+### Rutas
+
+| Ruta | Qué hace |
+| --- | --- |
+| `/cursos/` | Listado público |
+| `/cursos/[slug]` | Página de venta + formulario de compra |
+| `/acceso/` | Pedir un enlace nuevo |
+| `/acceso/[token]` | Canje del enlace del correo (crea sesión) |
+| `/curso/[slug]/ver` | Área protegida con los videos |
+| `/admin/ordenes` | Panel de órdenes (Basic auth con `ADMIN_TOKEN`) |
+| `/api/checkout` | Crea la orden y el pago en Flow |
+| `/api/webhooks/flow` | Confirma el pago y envía el correo |
+| `/api/acceso/reenviar` | Reenvía el enlace de acceso |
+
+### Variables y secretos
+
+| Nombre | Tipo | Uso |
+| --- | --- | --- |
+| `DB` | binding D1 | Órdenes, tokens, sesiones y logs |
+| `FLOW_API_KEY` | secreto | Crear pagos |
+| `FLOW_SECRET` | secreto | Firmar y consultar pagos |
+| `FLOW_SANDBOX` | variable | `1` para sandbox |
+| `RESEND_API_KEY` | secreto | Enviar el correo de acceso |
+| `EMAIL_FROM` | variable | `cursos@verderapia.cl` |
+| `ADMIN_TOKEN` | secreto | Contraseña del panel (usuario `admin`) |
+| `PUBLIC_SITE_URL` | variable | `https://verderapia.cl` |
+| `PAYMENTS_MODE` | variable | `demo` solo para pruebas; **nunca en producción** |
+
+### Base de datos
+
+```sh
+npx wrangler d1 migrations apply verderapia-paywall --remote \
+  --file=migrations/0001_paywall.sql
+```
+
+O pegar `migrations/0001_paywall.sql` en **D1 → Console** del dashboard.
+
+### Probar sin cobrar (local)
+
+```sh
+cp .dev.vars.example .dev.vars
+npx wrangler d1 execute verderapia-paywall --local --file=migrations/0001_paywall.sql
+pnpm build
+npx wrangler dev --local
+```
+
+Con `PAYMENTS_MODE=demo`, el checkout crea la orden pagada, genera el enlace y
+redirige a `/acceso/<token>` como si hubiera pagado. Los correos quedan
+registrados en `email_log` como `skipped` si no hay `RESEND_API_KEY`.
+
+### Producción
+
+1. Cargar `FLOW_API_KEY`, `FLOW_SECRET`, `RESEND_API_KEY`, `ADMIN_TOKEN` como
+   secretos del Worker.
+2. Configurar el webhook de Flow en `https://verderapia.cl/api/webhooks/flow`.
+3. Verificar el dominio de correo en Resend (SPF, DKIM, DMARC).
+4. Dejar `PAYMENTS_MODE` sin valor (o distinto de `demo`).
+
 ## Problemas comunes
 
 - **`ERR_PNPM_IGNORED_BUILDS`**: pnpm 11 bloquea scripts de instalación. Ya están

@@ -1,0 +1,21 @@
+# Variables para desarrollo local con `wrangler dev` (paywall).
+# Copia este archivo a `.dev.vars` (ya está en .gitignore) y ajusta.
+
+# Modo de pagos: `demo` permite probar el flujo completo sin pasarela.
+# NUNCA usar `demo` en producción: cualquiera obtendría acceso gratis.
+PAYMENTS_MODE=demo
+
+# Contraseña del panel /admin/ordenes (usuario: admin).
+ADMIN_TOKEN=cambiame-por-un-token-largo
+
+# Público
+PUBLIC_SITE_URL=http://localhost:8787
+EMAIL_FROM=cursos@verderapia.cl
+
+# Flow (producción)
+# FLOW_API_KEY=
+# FLOW_SECRET=
+# FLOW_SANDBOX=1
+
+# Resend (correos de acceso)
+# RESEND_API_KEY=

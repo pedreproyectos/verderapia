@@ -295,6 +295,103 @@ export default config({
         }),
       },
     }),
+
+    cursos: collection({
+      label: "Cursos",
+      path: "src/content/cursos/*",
+      format: { data: "yaml" },
+      slugField: "titulo",
+      columns: ["precio", "publicado"],
+      schema: {
+        titulo: fields.slug({ name: { label: "Título" } }),
+        resumen: fields.text({
+          label: "Resumen",
+          multiline: true,
+          description: "Texto corto que aparece en la tarjeta del listado.",
+        }),
+        descripcion: fields.text({
+          label: "Descripción",
+          multiline: true,
+          description: "Texto largo de la página de venta.",
+        }),
+        precio: fields.integer({
+          label: "Precio (CLP, IVA incluido)",
+          description:
+            "Precio total del curso. Incluye ambas partes. Se muestra formateado en el sitio.",
+          validation: { isRequired: true, min: 0 },
+        }),
+        moneda: fields.select({
+          label: "Moneda",
+          options: [{ label: "Peso chileno (CLP)", value: "CLP" }],
+          defaultValue: "CLP",
+        }),
+        publicado: fields.checkbox({
+          label: "Publicado",
+          description: "Si está desmarcado, el curso no aparece en el sitio.",
+          defaultValue: false,
+        }),
+        orden: fields.integer({
+          label: "Orden",
+          description: "Los cursos se muestran de menor a mayor.",
+          defaultValue: 0,
+        }),
+        portada: fields.image({
+          label: "Imagen de portada",
+          directory: "public/images/cursos",
+          publicPath: "/images/cursos/",
+          validation: { isRequired: false },
+        }),
+        previewVimeoId: fields.text({
+          label: "Vimeo ID del video de muestra",
+          description:
+            "Opcional. Video público que se muestra en la página de venta. Solo el ID, no el enlace completo.",
+        }),
+        partes: fields.array(
+          fields.object({
+            titulo: fields.text({ label: "Título de la parte" }),
+            descripcion: fields.text({ label: "Descripción", multiline: true }),
+            videos: fields.array(
+              fields.object({
+                videoId: fields.text({
+                  label: "ID interno",
+                  description:
+                    "Identificador estable, por ejemplo p1v1. No lo cambies si ya hay progreso guardado.",
+                }),
+                titulo: fields.text({ label: "Título del video" }),
+                vimeoId: fields.text({
+                  label: "Vimeo ID",
+                  description:
+                    "Número o cadena que identifica el video en Vimeo (solo el ID).",
+                }),
+                vimeoHash: fields.text({
+                  label: "Hash privado de Vimeo",
+                  description:
+                    "Parte privada del enlace de Vimeo. Solo se muestra a quien compró el curso.",
+                }),
+                duracionMin: fields.integer({
+                  label: "Duración (minutos)",
+                  defaultValue: 0,
+                }),
+                descripcion: fields.text({
+                  label: "Descripción",
+                  multiline: true,
+                }),
+              }),
+              {
+                label: "Videos",
+                itemLabel: (props) => props.fields.titulo.value || "Video",
+              },
+            ),
+          }),
+          {
+            label: "Partes del curso",
+            description:
+              "Cada curso se organiza en dos partes (puedes agregar más si algún día hace falta).",
+            itemLabel: (props) => props.fields.titulo.value || "Parte",
+          },
+        ),
+      },
+    }),
   },
 
   singletons: {

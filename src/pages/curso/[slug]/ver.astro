@@ -1,0 +1,362 @@
+---
+export const prerender = false;
+
+import {
+  getCursoServidor,
+  getEnv,
+  getSesion,
+  sesionValida,
+  tocarSesion,
+} from '../../../lib/paywall';
+import { site } from '../../../data/site';
+import '../../../styles/global.css';
+
+const env = await getEnv(Astro.locals);
+const slug = Astro.params.slug ?? '';
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'private, no-store');
+
+const curso = getCursoServidor(slug);
+
+if (!env.DB) {
+  return new Response('El área de cursos no está configurada todavía.', { status: 503 });
+}
+
+const sessionId = Astro.cookies.get('vp_session')?.value;
+const sesion = sessionId ? await getSesion(env.DB, sessionId) : null;
+
+if (!sesionValida(sesion)) {
+  return Astro.redirect(curso ? `/cursos/${curso.id}` : '/cursos/', 302);
+}
+
+if (!curso) {
+  return new Response('Curso no encontrado', { status: 404 });
+}
+
+if (sesion.curso_slug !== curso.id) {
+  return Astro.redirect(`/curso/${sesion.curso_slug}/ver`, 302);
+}
+
+await tocarSesion(env.DB, sesion.id);
+
+const nombre = sesion.email.split('@')[0];
+const totalVideos = curso.partes.reduce((n, parte) => n + parte.videos.length, 0);
+---
+
+<!doctype html>
+<html lang="es" data-tema="1">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{curso.titulo} — Verderapia</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Nunito+Sans:ital,opsz,wght@0,6..12,300..800;1,6..12,300..700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="aula__nav">
+      <div class="aula__inner">
+        <a class="aula__brand" href="/">
+          <img src="/images/verderapia/verderapialogo.jpg" alt="" />
+          <span>Verderapia</span>
+        </a>
+        <div class="aula__user">
+          <span class="aula__email">{sesion.email}</span>
+          <form method="post" action="/api/salir">
+            <button type="submit">Cerrar sesión</button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="aula">
+      <div class="container">
+        <p class="aula__back"><a href="/cursos/">← Todos los cursos</a></p>
+
+        <header class="aula__head">
+          <p class="eyebrow">Tu curso</p>
+          <h1>{curso.titulo}</h1>
+          <p class="aula__meta">
+            Hola, {nombre} · {curso.partes.length} partes · {totalVideos}
+            {totalVideos === 1 ? 'video' : 'videos'} · acceso sin vencimiento
+          </p>
+        </header>
+
+        {curso.partes.map((parte, indiceParte) => (
+          <section class="parte">
+            <header class="parte__head">
+              <span class="parte__num">{String(indiceParte + 1).padStart(2, '0')}</span>
+              <div>
+                <h2>{parte.titulo}</h2>
+                {parte.descripcion && <p class="parte__desc">{parte.descripcion}</p>}
+              </div>
+            </header>
+
+            {parte.videos.length === 0 ? (
+              <p class="parte__vacio">Los videos de esta parte están en preparación.</p>
+            ) : (
+              <div class="videos">
+                {parte.videos.map((video, indiceVideo) => {
+                  const src =
+                    video.vimeoId
+                      ? `https://player.vimeo.com/video/${video.vimeoId}?h=${video.vimeoHash ?? ''}&dnt=1&title=0&byline=0&portrait=0`
+                      : null;
+                  return (
+                    <details class="video" open={indiceParte === 0 && indiceVideo === 0}>
+                      <summary>
+                        <span class="video__num">
+                          {String(indiceParte + 1)}.{String(indiceVideo + 1)}
+                        </span>
+                        <span class="video__titulo">{video.titulo}</span>
+                        {video.duracionMin > 0 && (
+                          <span class="video__dur">{video.duracionMin} min</span>
+                        )}
+                      </summary>
+                      {video.descripcion && <p class="video__desc">{video.descripcion}</p>}
+                      {src ? (
+                        <div class="video__frame">
+                          <iframe
+                            src={src}
+                            title={video.titulo}
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowfullscreen
+                            loading="lazy"
+                            referrerpolicy="strict-origin-when-cross-origin"
+                          ></iframe>
+                        </div>
+                      ) : (
+                        <p class="video__vacio">Video en preparación.</p>
+                      )}
+                    </details>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        ))}
+
+        <footer class="aula__foot">
+          <p>
+            ¿Problemas para ver los videos? Escríbenos a
+            <a href={`mailto:${site.contacto.email}`}>{site.contacto.email}</a>.
+          </p>
+          <p>
+            Guarda este enlace para volver:
+            <a href="/acceso/">pedir un enlace nuevo</a>.
+          </p>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  body {
+    margin: 0;
+    background: var(--bg, #f4f1e9);
+    color: var(--ink, #222);
+    font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  .aula__nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: color-mix(in srgb, var(--bg, #f4f1e9) 92%, transparent);
+    border-bottom: 1px solid var(--line, #e2ddcf);
+    backdrop-filter: blur(12px);
+  }
+  .aula__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0.6rem 1.2rem;
+  }
+  .aula__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: inherit;
+  }
+  .aula__brand img {
+    width: 38px;
+    height: 38px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  .aula__user {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    font-size: 0.82rem;
+  }
+  .aula__email {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--muted, #6b6b6b);
+  }
+  .aula__user button {
+    padding: 0.45em 0.9em;
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: inherit;
+    background: transparent;
+    border: 1px solid var(--line, #e2ddcf);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .aula {
+    padding-block: 2rem 4rem;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-inline: 1.2rem;
+  }
+  .aula__back {
+    margin-bottom: 1.4rem;
+    font-weight: 700;
+  }
+  .aula__back a,
+  .aula__foot a {
+    color: var(--brand, #2f5d3a);
+  }
+  .aula__head h1 {
+    margin: 0.6rem 0 0.7rem;
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    line-height: 1.15;
+  }
+  .aula__meta {
+    color: var(--muted, #6b6b6b);
+    font-size: 0.88rem;
+  }
+  .eyebrow {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--brand-2, #7a8f5a);
+  }
+  .parte {
+    margin-top: 2.2rem;
+    padding: 1.2rem 1.3rem;
+    background: var(--surface, #fff);
+    border: 1px solid var(--line, #e2ddcf);
+    border-radius: 18px;
+  }
+  .parte__head {
+    display: flex;
+    gap: 0.8rem;
+    align-items: baseline;
+  }
+  .parte__num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    color: var(--brand, #2f5d3a);
+    opacity: 0.7;
+  }
+  .parte h2 {
+    margin: 0;
+    font-family: 'Fraunces', serif;
+    font-size: 1.35rem;
+  }
+  .parte__desc {
+    margin: 0.3rem 0 0;
+    color: var(--ink-soft, #444);
+    font-size: 0.92rem;
+  }
+  .parte__vacio {
+    margin-top: 0.8rem;
+    color: var(--muted, #6b6b6b);
+    font-size: 0.9rem;
+  }
+  .videos {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+  .video {
+    border: 1px solid var(--line, #e2ddcf);
+    border-radius: 14px;
+    background: var(--bg, #f4f1e9);
+    overflow: hidden;
+  }
+  .video[open] {
+    background: var(--surface, #fff);
+  }
+  .video summary {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .video summary::-webkit-details-marker {
+    display: none;
+  }
+  .video__num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--brand, #2f5d3a);
+    opacity: 0.65;
+  }
+  .video__titulo {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.96rem;
+  }
+  .video__dur {
+    color: var(--muted, #6b6b6b);
+    font-size: 0.78rem;
+  }
+  .video__desc {
+    margin: 0 1rem 0.6rem;
+    color: var(--ink-soft, #444);
+    font-size: 0.9rem;
+  }
+  .video__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .video__frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .video__vacio {
+    margin: 0 1rem 1rem;
+    color: var(--muted, #6b6b6b);
+    font-size: 0.88rem;
+  }
+  .aula__foot {
+    margin-top: 2.6rem;
+    padding-top: 1.4rem;
+    border-top: 1px solid var(--line, #e2ddcf);
+    color: var(--muted, #6b6b6b);
+    font-size: 0.86rem;
+  }
+  @media (max-width: 640px) {
+    .aula__email {
+      display: none;
+    }
+  }
+</style>

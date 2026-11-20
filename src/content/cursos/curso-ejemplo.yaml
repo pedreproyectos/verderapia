@@ -1,0 +1,17 @@
+# Curso de ejemplo (borrador). Puedes editarlo o eliminarlo desde Keystatic.
+titulo: Curso de ejemplo
+resumen: Este es un curso de ejemplo para mostrar cómo se administra el contenido.
+descripcion: >-
+  Reemplaza este texto con la descripción real del curso. El curso se organiza
+  en dos partes y cada parte tiene sus videos.
+precio: 29900
+moneda: CLP
+publicado: false
+orden: 0
+partes:
+  - titulo: Parte 1 — Fundamentos
+    descripcion: Qué se trabaja en esta primera parte.
+    videos: []
+  - titulo: Parte 2 — Práctica
+    descripcion: Qué se trabaja en esta segunda parte.
+    videos: []

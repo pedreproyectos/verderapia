@@ -2,6 +2,8 @@
 dist/
 # generated types
 .astro/
+# generated course data (private video hashes)
+src/data/cursos.server.json
 
 # cloudflare local state
 .wrangler/
