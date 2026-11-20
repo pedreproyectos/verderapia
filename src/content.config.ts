@@ -76,8 +76,15 @@ const servicios = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/servicios' }),
   schema: z.object({
     nombre: z.string(),
+    subtitulo: z.string().optional(),
     descripcion: z.string().optional(),
+    icono: z.enum(['tarot', 'flor', 'brote', 'cuerpo', 'sistema']).optional(),
+    tono: z
+      .enum(['amarillo', 'lavanda', 'rosa', 'menta', 'verde'])
+      .optional(),
     imagen: z.string().optional(),
+    detalles: z.array(z.string()).default([]),
+    orden: z.number().default(0),
     horarios: z
       .array(
         z.object({

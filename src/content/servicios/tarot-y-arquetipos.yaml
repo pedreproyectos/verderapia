@@ -1,0 +1,23 @@
+nombre: Tarot y arquetipos
+subtitulo: ""
+descripcion: Explora tus procesos a través del lenguaje simbólico.
+icono: tarot
+tono: amarillo
+imagen: ""
+detalles: []
+orden: 1
+horarios:
+  - dia: Martes
+    clases:
+      - hora: "18:30"
+        nombre: Tarot terapéutico
+      - hora: "20:00"
+        nombre: Lectura de arquetipos
+precios:
+  - nombre: Sesión individual
+    detalle: 60 minutos
+    valor: "$28.000"
+  - nombre: Taller grupal
+    detalle: 2 horas
+    valor: "$18.000"
+nota: No necesitas saber leer el tarot; solo trae tu intención.

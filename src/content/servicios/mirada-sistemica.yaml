@@ -1,0 +1,29 @@
+nombre: Mirada sistémica
+subtitulo: ""
+descripcion: Explora tus vínculos, tu historia familiar y los patrones que atraviesan tu sistema.
+icono: sistema
+tono: verde
+imagen: ""
+detalles:
+  - Constelaciones familiares
+  - Genograma
+  - Talleres sistémicos
+  - Sesiones individuales
+orden: 5
+horarios:
+  - dia: Viernes
+    clases:
+      - hora: "18:00"
+        nombre: Constelación grupal
+  - dia: Sábado
+    clases:
+      - hora: "11:00"
+        nombre: Genograma
+precios:
+  - nombre: Sesión individual
+    detalle: 90 minutos
+    valor: "$35.000"
+  - nombre: Taller grupal
+    detalle: 3 horas
+    valor: "$22.000"
+nota: La mirada sistémica integra constelaciones, genograma y trabajo grupal.

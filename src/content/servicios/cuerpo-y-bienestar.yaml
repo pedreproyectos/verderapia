@@ -1,0 +1,23 @@
+nombre: Cuerpo y bienestar
+subtitulo: ""
+descripcion: Cuida tu energía y conecta con tu bienestar.
+icono: cuerpo
+tono: menta
+imagen: ""
+detalles: []
+orden: 4
+horarios:
+  - dia: Lunes y miércoles
+    clases:
+      - hora: "09:00"
+        nombre: Yoga suave
+      - hora: "18:30"
+        nombre: Respiración y calma
+precios:
+  - nombre: Clase suelta
+    detalle: ""
+    valor: "$8.000"
+  - nombre: Mensualidad
+    detalle: 8 clases
+    valor: "$45.000"
+nota: Cupos limitados. Trae tu mat y ropa cómoda.

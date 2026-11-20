@@ -184,12 +184,51 @@ export default config({
               "Nombre del archivo. No cambia lo que se ve en el sitio.",
           },
         }),
+        subtitulo: fields.text({
+          label: "Subtítulo",
+          description:
+            "Línea secundaria bajo el nombre. Por ejemplo: Habitar mi madurez.",
+        }),
         descripcion: fields.text({ label: "Descripción", multiline: true }),
+        icono: fields.select({
+          label: "Ícono",
+          options: [
+            { label: "Tarot", value: "tarot" },
+            { label: "Flor", value: "flor" },
+            { label: "Brote", value: "brote" },
+            { label: "Cuerpo y bienestar", value: "cuerpo" },
+            { label: "Mirada sistémica", value: "sistema" },
+          ],
+          defaultValue: "tarot",
+        }),
+        tono: fields.select({
+          label: "Color de la tarjeta",
+          options: [
+            { label: "Amarillo", value: "amarillo" },
+            { label: "Lavanda", value: "lavanda" },
+            { label: "Rosa", value: "rosa" },
+            { label: "Menta", value: "menta" },
+            { label: "Verde", value: "verde" },
+          ],
+          defaultValue: "amarillo",
+        }),
         imagen: fields.image({
           label: "Imagen",
+          description:
+            "Opcional. La sección usa una imagen principal común; esta imagen no se muestra en el acordeón.",
           directory: "public/images/verderapia",
           publicPath: "/images/verderapia/",
           validation: { isRequired: false },
+        }),
+        detalles: fields.array(fields.text({ label: "Detalle" }), {
+          label: "Detalles",
+          description:
+            "Líneas breves que aparecen bajo la descripción, por ejemplo: Constelaciones familiares, Genograma.",
+        }),
+        orden: fields.integer({
+          label: "Orden",
+          description: "Los servicios se muestran de menor a mayor.",
+          defaultValue: 0,
         }),
         horarios: fields.array(
           fields.object({

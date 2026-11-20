@@ -1,0 +1,21 @@
+nombre: Mi nueva etapa
+subtitulo: Habitar mi madurez
+descripcion: Recursos y herramientas para transitar el climaterio con mayor conciencia y bienestar.
+icono: brote
+tono: rosa
+imagen: ""
+detalles: []
+orden: 3
+horarios:
+  - dia: Sábado
+    clases:
+      - hora: "10:30"
+        nombre: Círculo de mujeres
+precios:
+  - nombre: Taller mensual
+    detalle: 3 horas
+    valor: "$20.000"
+  - nombre: Acompañamiento individual
+    detalle: 60 minutos
+    valor: "$30.000"
+nota: Un espacio para compartir, comprender y cuidar esta etapa.

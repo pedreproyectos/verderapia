@@ -42,6 +42,31 @@ external: true
   principal).
 - **external**: abre el enlace en una pestaña nueva.
 
+### Servicios
+
+Cada servicio es un archivo YAML en `src/content/servicios/` y se muestra como
+un desplegable en la sección **Talleres y Servicios** del home.
+
+```yaml
+nombre: Mirada sistémica
+subtitulo: ""            # opcional, línea bajo el título
+descripcion: Explora tus vínculos, tu historia familiar y los patrones...
+icono: sistema           # tarot | flor | brote | cuerpo | sistema
+tono: verde              # amarillo | lavanda | rosa | menta | verde
+detalles:                # opcional, líneas breves bajo la descripción
+  - Constelaciones familiares
+  - Genograma
+orden: 5                 # los servicios se muestran de menor a mayor
+horarios: [...]
+precios: [...]
+nota: ""                 # opcional, texto final del desplegable
+```
+
+La imagen principal de la sección es común a todos los servicios y vive en
+`public/images/verderapia/servicios/servicios-main.webp` (se cambia editando
+`src/components/Servicios.astro`). El campo `imagen` de cada servicio se
+mantiene por compatibilidad, pero el acordeón no lo usa.
+
 ### Novedades y feed de Instagram
 
 - **Novedades / blog**: `src/content/posts/*.mdoc` (Markdoc). Se ven en `/posts`
