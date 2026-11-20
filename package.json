@@ -14,13 +14,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^14.4.1",
-    "@astrojs/markdoc": "^2.1.0",
-    "@astrojs/react": "^7.1.0",
+    "@astrojs/cloudflare": "^14.4.8",
+    "@astrojs/markdoc": "^2.1.5",
+    "@astrojs/react": "^7.1.9",
     "@keystatic/astro": "^6.0.0",
     "@keystatic/core": "^0.6.9",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.4.1",
+    "astro": "^7.4.12",
     "cookie": "1.1.1",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -28,10 +28,10 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@astrojs/node": "^11.1.9",
+    "@astrojs/node": "^11.1.13",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
-    "wrangler": "^4.151.2"
+    "wrangler": "^4.163.0"
   }
 }
