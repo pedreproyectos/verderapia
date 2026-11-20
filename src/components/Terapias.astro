@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import { getTerapias } from '../data/terapias';
 
 interface Props {
   variant?: 'list' | 'cards' | 'accordion';
@@ -12,7 +13,8 @@ const {
   title = 'Terapias y masajes',
   subtitle = 'Cada sesión está pensada para devolverte al equilibrio. Reserva tu hora por WhatsApp o correo.',
 } = Astro.props;
-const terapias = site.terapias;
+// La lista de terapias y precios se administra desde Keystatic.
+const terapias = await getTerapias();
 ---
 
 <section class:list={['terapias', `terapias--${variant}`, 'section']} id="terapias" aria-labelledby="terapias-title">

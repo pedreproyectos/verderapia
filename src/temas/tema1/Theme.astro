@@ -81,20 +81,18 @@ const isWhatsApp = (href: string) => /wa\.me|whatsapp/i.test(href);
   <!-- HISTORIA -->
   <Historia variant="split" />
 
-  <!-- PILARES -->
-  <Pilares variant="rows" />
-
-  <!-- TERAPIAS -->
-  <Terapias variant="list" />
-
   <!-- SERVICIOS -->
   <Servicios />
 
-  <!-- NOVEDADES: oculta temporalmente del home. Para mostrarla de nuevo,
-       importa PostsSection y vuelve a colocar <PostsSection /> aquí. -->
-
-  <!-- INSTAGRAM -->
+  <!-- NOVEDADES (Instagram). El blog PostsSection sigue oculto: para
+       mostrarlo, impórtalo arriba y colócalo junto a esta sección. -->
   <InstagramFeed />
+
+  <!-- LISTA DE PRECIOS: terapias y masajes -->
+  <Terapias variant="list" />
+
+  <!-- PILARES -->
+  <Pilares variant="rows" />
 
   <!-- GIFT CARD / DESCUENTOS -->
   <GiftCard />

@@ -67,6 +67,23 @@ La imagen principal de la sección es común a todos los servicios y vive en
 `src/components/Servicios.astro`). El campo `imagen` de cada servicio se
 mantiene por compatibilidad, pero el acordeón no lo usa.
 
+### Terapias y precios
+
+La lista larga de precios del home (sección **Terapias y masajes**) se
+administra en `src/content/terapias/`. Cada archivo YAML es una terapia:
+
+```yaml
+nombre: Masaje de relajación
+descripcion: Relaja la musculatura, disminuye el estrés...
+duracion: 75 min
+precio: $25.000
+extra: "Masaje + Cama de Jade: $28.000"   # opcional
+orden: 1                                   # menor a mayor
+```
+
+Al agregar, editar o quitar archivos en esa carpeta, la lista del sitio se
+actualiza en el siguiente build (Keystatic hace el commit automáticamente).
+
 ### Novedades y feed de Instagram
 
 - **Novedades / blog**: `src/content/posts/*.mdoc` (Markdoc). Se ven en `/posts`
