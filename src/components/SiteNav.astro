@@ -33,11 +33,6 @@ const navCta = cta ?? (mainCta
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
     </nav>
 
-    <a class="nav__brand" href="/" aria-label="Verderapia — inicio">
-      <img class="nav__logo" src="/images/verderapia/verderapialogo.jpg" alt="" />
-      <span class="nav__name">{site.nombre}</span>
-    </a>
-
     <div class="nav__actions">
       <a
         class="btn nav__cta"
@@ -51,6 +46,11 @@ const navCta = cta ?? (mainCta
         <span></span><span></span><span></span>
       </button>
     </div>
+
+    <a class="nav__brand" href="/" aria-label="Verderapia — inicio">
+      <img class="nav__logo" src="/images/verderapia/verderapialogo.jpg" alt="" />
+      <span class="nav__name">{site.nombre}</span>
+    </a>
   </div>
 </header>
 
@@ -96,7 +96,6 @@ const navCta = cta ?? (mainCta
     display: inline-flex;
     align-items: center;
     gap: 0.6rem;
-    margin-left: auto;
     font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 600;
@@ -145,6 +144,7 @@ const navCta = cta ?? (mainCta
     display: flex;
     align-items: center;
     gap: 0.8rem;
+    margin-left: auto;
   }
   .nav__cta {
     padding: 0.7em 1.3em;
@@ -226,6 +226,7 @@ const navCta = cta ?? (mainCta
 
   @media (max-width: 900px) {
     .nav__brand {
+      order: -1;
       margin-left: 0;
     }
     .nav__links {
