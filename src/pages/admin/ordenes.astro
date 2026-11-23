@@ -63,6 +63,13 @@ const estadoTexto: Record<string, string> = {
   rejected: 'Rechazada',
   refunded: 'Reembolsada',
 };
+
+const medioTexto: Record<string, string> = {
+  flow: 'Flow',
+  transferencia: 'Transferencia',
+  demo: 'Demo',
+  manual: 'Manual',
+};
 ---
 
 <!doctype html>
@@ -267,6 +274,7 @@ const estadoTexto: Record<string, string> = {
 
       {ok === 'enviado' && <div class="aviso">Enlace reenviado al comprador.</div>}
       {ok === 'revocado' && <div class="aviso">Sesiones revocadas: el comprador deberá pedir un enlace nuevo.</div>}
+      {ok === 'pagado' && <div class="aviso">Orden confirmada como pagada. Se generó el acceso y se envió el correo.</div>}
       {error === 'orden' && <div class="aviso error">No se pudo reenviar: la orden no está pagada o el curso no existe.</div>}
 
       <div class="tarjetas">
@@ -278,8 +286,9 @@ const estadoTexto: Record<string, string> = {
       <section class="manual">
         <h2>Crear acceso manual</h2>
         <p>
-          Para ventas por transferencia, efectivo o WhatsApp: registra la orden como pagada
-          y genera el enlace de acceso.
+          Para ventas por efectivo, WhatsApp u otro medio fuera del sitio: registra la orden
+          como pagada y genera el enlace de acceso. Las transferencias hechas desde la página
+          del curso aparecen como pendientes y se confirman con «Marcar pagada».
         </p>
         {cursos.length === 0 ? (
           <p class="nota">Primero crea un curso en Keystatic.</p>
@@ -320,7 +329,11 @@ const estadoTexto: Record<string, string> = {
             {ordenes.map((orden) => (
               <tr>
                 <td>{fecha(orden.created_at)}</td>
-                <td>{orden.curso_slug}</td>
+                <td>
+                  {orden.curso_slug}
+                  <br />
+                  <small>{medioTexto[orden.provider] ?? orden.provider}</small>
+                </td>
                 <td>
                   {orden.nombre || '—'}
                   <br />
@@ -335,6 +348,13 @@ const estadoTexto: Record<string, string> = {
                 <td>{orden.sesiones}</td>
                 <td>
                   <div class="acciones">
+                    {orden.status !== 'paid' && (
+                      <form method="post" action="/api/admin/acciones">
+                        <input type="hidden" name="accion" value="confirmar" />
+                        <input type="hidden" name="order_id" value={orden.id} />
+                        <button type="submit">Marcar pagada</button>
+                      </form>
+                    )}
                     {orden.status === 'paid' && (
                       <form method="post" action="/api/admin/acciones">
                         <input type="hidden" name="accion" value="link" />

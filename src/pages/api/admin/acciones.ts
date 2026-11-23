@@ -9,6 +9,7 @@ import {
   getEnv,
   getOrden,
   isValidEmail,
+  marcarOrdenPagada,
   normalizeEmail,
   revocarSesionesDeOrden,
   siteUrl,
@@ -93,8 +94,30 @@ export const POST: APIRoute = async ({ request, locals, redirect }) => {
     );
   }
 
-  // Acceso manual: se usa cuando el pago se recibe por transferencia u otro
-  // medio y no pasa por la pasarela.
+  // Confirmar una orden pendiente (transferencia u otro medio fuera de la
+  // pasarela): la marca como pagada y envía el enlace de acceso.
+  if (accion === 'confirmar' && order && order.status !== 'paid') {
+    await marcarOrdenPagada(db, order, `admin:${order.id}`, {
+      confirmadoPor: 'admin',
+      confirmadoEn: new Date().toISOString(),
+    });
+
+    const curso = getCursoServidor(order.curso_slug);
+    const actualizada = await getOrden(db, order.id);
+    if (curso && actualizada) {
+      const token = await crearTokenAcceso(db, actualizada.id);
+      await enviarCorreoAcceso(env, db, {
+        order: actualizada as Order,
+        curso,
+        enlace: `${siteUrl(env)}/acceso/${token}`,
+      });
+    }
+
+    return redirect('/admin/ordenes?ok=pagado');
+  }
+
+  // Acceso manual: se usa cuando el pago se recibe por efectivo, WhatsApp u
+  // otro medio y no pasa por el sitio.
   if (accion === 'manual') {
     const email = normalizeEmail(form.get('email'));
     const cursoSlug = String(form.get('curso') ?? '');

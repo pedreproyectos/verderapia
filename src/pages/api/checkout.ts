@@ -5,6 +5,8 @@ import {
   crearOrden,
   crearTokenAcceso,
   enviarCorreoAcceso,
+  enviarCorreoTransferencia,
+  getOrdenPendienteTransferencia,
   flowCrearPago,
   jsonResponse,
   limitar,
@@ -23,7 +25,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
     return jsonResponse({ error: 'El sistema de pagos aún no está configurado.' }, 503);
   }
 
-  let body: { cursoSlug?: string; email?: string; nombre?: string } | null = null;
+  let body: {
+    cursoSlug?: string;
+    email?: string;
+    nombre?: string;
+    metodo?: string;
+  } | null = null;
   try {
     body = await request.json();
   } catch {
@@ -33,6 +40,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const cursoSlug = String(body?.cursoSlug ?? '').trim();
   const email = normalizeEmail(body?.email);
   const nombre = String(body?.nombre ?? '').trim().slice(0, 120);
+  const metodo = body?.metodo === 'transferencia' ? 'transferencia' : 'flow';
 
   if (!isValidEmail(email)) {
     return jsonResponse({ error: 'Escribe un correo válido.' }, 400);
@@ -51,6 +59,32 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const origin = siteUrl(env);
   const modoDemo = env.PAYMENTS_MODE === 'demo';
+
+  // Transferencia bancaria: registra la orden como pendiente y envía por correo
+  // los datos para transferir. El acceso se libera al confirmarla en el panel.
+  if (metodo === 'transferencia') {
+    const order =
+      (await getOrdenPendienteTransferencia(db, curso.id, email)) ??
+      (await crearOrden(db, {
+        cursoSlug: curso.id,
+        email,
+        nombre,
+        amountClp: curso.precio,
+        provider: 'transferencia',
+        status: 'pending',
+        raw: { metodo: 'transferencia' },
+      }));
+
+    const envio = await enviarCorreoTransferencia(env, db, { order, curso });
+
+    return jsonResponse({
+      metodo: 'transferencia',
+      orderId: order.id,
+      monto: curso.precio,
+      moneda: curso.moneda,
+      correo: envio.status,
+    });
+  }
 
   // Modo demo: no cobra, crea la orden pagada y entrega el enlace directamente.
   // Solo se activa si el administrador define PAYMENTS_MODE=demo.
@@ -71,7 +105,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   if (!env.FLOW_API_KEY || !env.FLOW_SECRET) {
     return jsonResponse(
-      { error: 'El pago online todavía no está habilitado. Escríbenos por WhatsApp.' },
+      {
+        error:
+          'El pago online todavía no está habilitado. Puedes pagar por transferencia bancaria o escríbenos por WhatsApp.',
+      },
       503,
     );
   }

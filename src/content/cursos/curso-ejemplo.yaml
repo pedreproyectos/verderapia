@@ -1,4 +1,3 @@
-# Curso de ejemplo (borrador). Puedes editarlo o eliminarlo desde Keystatic.
 titulo: Curso de ejemplo
 resumen: Este es un curso de ejemplo para mostrar cómo se administra el contenido.
 descripcion: >-
@@ -6,12 +5,13 @@ descripcion: >-
   en dos partes y cada parte tiene sus videos.
 precio: 29900
 moneda: CLP
-publicado: false
+publicado: true
 orden: 0
+portada: /images/cursos/curso-ejemplo/portada.webp
 partes:
-  - titulo: Parte 1 — Fundamentos
-    descripcion: Qué se trabaja en esta primera parte.
-    videos: []
-  - titulo: Parte 2 — Práctica
-    descripcion: Qué se trabaja en esta segunda parte.
-    videos: []
+  - titulo: Curso Pranayamas
+    descripcion: Regulación emocional
+    videos:
+      - vimeoId: '1249479109'
+        vimeoHash: pranayamas01
+        duracionMin: 20

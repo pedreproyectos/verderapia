@@ -7,6 +7,7 @@
  */
 
 import cursosRaw from '../data/cursos.server.json?raw';
+import { site } from '../data/site';
 
 // ---------------------------------------------------------------------------
 // Tipos mínimos de Cloudflare (evitamos depender de @cloudflare/workers-types)
@@ -501,6 +502,167 @@ export function flowEstadoTexto(status: number | undefined): 'pending' | 'paid' 
   if (status === 3) return 'rejected';
   if (status === 4) return 'refunded';
   return 'pending';
+}
+
+// ---------------------------------------------------------------------------
+// Transferencia bancaria
+// ---------------------------------------------------------------------------
+
+export type DatosTransferencia = {
+  /** true cuando hay banco, número de cuenta y titular configurados. */
+  configurada: boolean;
+  banco: string;
+  tipoCuenta: string;
+  numeroCuenta: string;
+  titular: string;
+  rut: string;
+  emailComprobante: string;
+  plazoHoras: number;
+};
+
+export function datosTransferencia(): DatosTransferencia {
+  const datos = site.pagos.transferencia;
+  return {
+    ...datos,
+    configurada: Boolean(
+      datos.banco.trim() && datos.numeroCuenta.trim() && datos.titular.trim(),
+    ),
+  };
+}
+
+/** Reutiliza la orden pendiente del mismo comprador y curso (evita duplicados). */
+export async function getOrdenPendienteTransferencia(
+  db: D1Database,
+  cursoSlug: string,
+  email: string,
+): Promise<Order | null> {
+  return db
+    .prepare(
+      `SELECT * FROM orders
+        WHERE provider = 'transferencia' AND curso_slug = ? AND email = ? AND status = 'pending'
+        ORDER BY created_at DESC
+        LIMIT 1`,
+    )
+    .bind(cursoSlug, email)
+    .first<Order>();
+}
+
+/** Correo con los datos bancarios y el código de la orden. */
+export async function enviarCorreoTransferencia(
+  env: Env,
+  db: D1Database,
+  data: { order: Order; curso: Curso },
+): Promise<{ status: 'sent' | 'skipped' | 'failed'; error?: string }> {
+  const datos = datosTransferencia();
+  const monto = formatPrecio(data.order.amount_clp, data.order.currency);
+  const codigo = data.order.id;
+  const nombre = data.order.nombre?.trim();
+  const saludo = nombre ? `Hola ${nombre}:` : 'Hola:';
+
+  const lineasCuenta = datos.configurada
+    ? [
+        `Banco: ${datos.banco}`,
+        datos.tipoCuenta ? `Tipo de cuenta: ${datos.tipoCuenta}` : '',
+        `Número de cuenta: ${datos.numeroCuenta}`,
+        `Titular: ${datos.titular}`,
+        datos.rut ? `RUT: ${datos.rut}` : '',
+      ].filter(Boolean)
+    : [];
+
+  const instrucciones = datos.configurada
+    ? [
+        `Transfiere ${monto} a esta cuenta:`,
+        '',
+        ...lineasCuenta,
+        '',
+        `Envía el comprobante a ${datos.emailComprobante} indicando tu nombre y el código ${codigo}.`,
+      ]
+    : [
+        `Para completar tu inscripción, escríbenos a ${datos.emailComprobante} (o por WhatsApp)`,
+        `y te enviamos los datos para transferir ${monto}. Menciona el código ${codigo}.`,
+      ];
+
+  const texto = [
+    saludo,
+    '',
+    `Registramos tu inscripción al curso "${data.curso.titulo}".`,
+    '',
+    ...instrucciones,
+    '',
+    `En cuanto confirmemos la transferencia (dentro de ${datos.plazoHoras} horas hábiles)`,
+    'te enviamos por correo el enlace de acceso al curso.',
+    '',
+    '— Verderapia',
+  ].join('\n');
+
+  const detalleHtml = datos.configurada
+    ? `<p>Transfiere <strong>${monto}</strong> a esta cuenta:</p>
+       <ul style="padding-left:18px;margin:12px 0">
+         <li><strong>Banco:</strong> ${escapeHtml(datos.banco)}</li>
+         ${datos.tipoCuenta ? `<li><strong>Tipo de cuenta:</strong> ${escapeHtml(datos.tipoCuenta)}</li>` : ''}
+         <li><strong>Número de cuenta:</strong> ${escapeHtml(datos.numeroCuenta)}</li>
+         <li><strong>Titular:</strong> ${escapeHtml(datos.titular)}</li>
+         ${datos.rut ? `<li><strong>RUT:</strong> ${escapeHtml(datos.rut)}</li>` : ''}
+       </ul>
+       <p>Envía el comprobante a <a href="mailto:${escapeHtml(datos.emailComprobante)}">${escapeHtml(datos.emailComprobante)}</a>
+          indicando tu nombre y el código <strong>${escapeHtml(codigo)}</strong>.</p>`
+    : `<p>Para completar tu inscripción, escríbenos a
+         <a href="mailto:${escapeHtml(datos.emailComprobante)}">${escapeHtml(datos.emailComprobante)}</a>
+         (o por WhatsApp) y te enviamos los datos para transferir <strong>${monto}</strong>.
+         Menciona el código <strong>${escapeHtml(codigo)}</strong>.</p>`;
+
+  const html = `
+    <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#222;line-height:1.6">
+      <p>${saludo}</p>
+      <p>Registramos tu inscripción al curso <strong>${escapeHtml(data.curso.titulo)}</strong>.</p>
+      ${detalleHtml}
+      <p style="font-size:14px;color:#555">En cuanto confirmemos la transferencia (dentro de ${datos.plazoHoras} horas hábiles) te enviamos por correo el enlace de acceso al curso.</p>
+      <p>— Verderapia</p>
+    </div>`;
+
+  const log = async (status: 'sent' | 'skipped' | 'failed', providerId: string | null, error?: string) => {
+    await db
+      .prepare(
+        `INSERT INTO email_log (id, order_id, kind, to_email, provider_id, status, error, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      .bind(newId('mail'), data.order.id, 'transfer', data.order.email, providerId, status, error ?? null, nowIso())
+      .run();
+  };
+
+  if (!env.RESEND_API_KEY) {
+    await log('skipped', null, 'RESEND_API_KEY no configurado');
+    return { status: 'skipped' };
+  }
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${env.RESEND_API_KEY}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: `Verderapia <${env.EMAIL_FROM ?? 'cursos@verderapia.cl'}>`,
+        to: [data.order.email],
+        reply_to: datos.emailComprobante || 'contacto@verderapia.cl',
+        subject: `Instrucciones de pago — ${data.curso.titulo}`,
+        text: texto,
+        html,
+      }),
+    });
+
+    const payload = (await res.json().catch(() => ({}))) as { id?: string; message?: string };
+    if (!res.ok) {
+      await log('failed', null, `${res.status}: ${payload.message ?? 'error'}`);
+      return { status: 'failed', error: `${res.status}` };
+    }
+    await log('sent', payload.id ?? null);
+    return { status: 'sent' };
+  } catch (error) {
+    await log('failed', null, String(error).slice(0, 300));
+    return { status: 'failed', error: String(error) };
+  }
 }
 
 // ---------------------------------------------------------------------------

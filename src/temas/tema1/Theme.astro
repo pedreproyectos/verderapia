@@ -2,6 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import Slider from '../../components/Slider.astro';
+import Conocenos from '../../components/Conocenos.astro';
 import Historia from '../../components/Historia.astro';
 import Pilares from '../../components/Pilares.astro';
 import Terapias from '../../components/Terapias.astro';
@@ -77,6 +78,9 @@ const isWhatsApp = (href: string) => /wa\.me|whatsapp/i.test(href);
       </div>
     </div>
   </section>
+
+  <!-- CONÓCENOS (videos de Vimeo administrados desde Keystatic) -->
+  <Conocenos />
 
   <!-- HISTORIA -->
   <Historia variant="split" />

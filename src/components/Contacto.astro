@@ -2,7 +2,7 @@
 import { site } from '../data/site';
 
 const c = site.contacto;
-const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(c.mapsQuery)}&output=embed`;
+const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(c.mapsCoords)}&z=16&output=embed`;
 ---
 
 <section class="contacto section" id="contacto" aria-labelledby="contacto-title">
@@ -44,6 +44,7 @@ const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(c.mapsQuery)}
       <div class="contacto__actions">
         <a class="btn" href={c.whatsappLink} target="_blank" rel="noopener noreferrer">Chat de WhatsApp</a>
         <a class="btn btn--ghost" href={c.instagramUrl} target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a class="btn btn--ghost" href={c.mapsUrl} target="_blank" rel="noopener noreferrer">Cómo llegar</a>
       </div>
     </div>
 

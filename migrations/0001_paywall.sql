@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS orders (
   nombre           TEXT,
   amount_clp       INTEGER NOT NULL,
   currency         TEXT NOT NULL DEFAULT 'CLP',
-  provider         TEXT NOT NULL,           -- flow | demo
+  provider         TEXT NOT NULL,           -- flow | transferencia | demo | manual
   provider_ref     TEXT,
   provider_payment TEXT,
   status           TEXT NOT NULL,           -- pending|paid|rejected|refunded
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS webhook_events (
 CREATE TABLE IF NOT EXISTS email_log (
   id          TEXT PRIMARY KEY,
   order_id    TEXT NOT NULL,
-  kind        TEXT NOT NULL,                -- access|resend
+  kind        TEXT NOT NULL,                -- access|resend|transfer
   to_email    TEXT NOT NULL,
   provider_id TEXT,
   status      TEXT NOT NULL,                -- sent|skipped|failed

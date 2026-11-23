@@ -34,6 +34,11 @@ const navLinks = [
 
 const mensaje = encodeURIComponent(`Hola, quiero inscribirme en el curso "${curso.titulo}".`);
 const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
+
+const transferencia = site.pagos.transferencia;
+const transferenciaConfigurada = Boolean(
+  transferencia.banco.trim() && transferencia.numeroCuenta.trim() && transferencia.titular.trim(),
+);
 ---
 
 <Base
@@ -64,13 +69,35 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
       )}
 
       <div class="curso__compra" id="comprar">
-        <div>
+        <div class="curso__precio-bloque">
           <span class="curso__precio-label">Precio del curso</span>
           <strong class="curso__precio">{formatPrecio(curso.precio, curso.moneda)}</strong>
           <span class="curso__precio-nota">Pago único · incluye las {curso.partes.length} partes</span>
         </div>
+
         <form class="curso__form" data-checkout>
           <input type="hidden" name="cursoSlug" value={curso.id} />
+
+          <fieldset class="pago">
+            <legend class="pago__legend">Elige cómo pagar</legend>
+            <div class="pago__opciones">
+              <label class="pago__opcion">
+                <input type="radio" name="metodo" value="flow" checked />
+                <span class="pago__caja">
+                  <span class="pago__titulo">Pagar online</span>
+                  <span class="pago__detalle">Tarjetas y Webpay, con Flow.cl</span>
+                </span>
+              </label>
+              <label class="pago__opcion">
+                <input type="radio" name="metodo" value="transferencia" />
+                <span class="pago__caja">
+                  <span class="pago__titulo">Transferencia bancaria</span>
+                  <span class="pago__detalle">Transfieres y envías el comprobante</span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
           <div class="curso__form-campos">
             <label class="sr-only" for="nombre">Tu nombre</label>
             <input id="nombre" name="nombre" type="text" placeholder="Tu nombre" autocomplete="name" />
@@ -84,26 +111,117 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
               autocomplete="email"
             />
           </div>
-          <button class="btn" type="submit">Comprar</button>
+
+          <button class="btn" type="submit" data-pagar>Pagar con Flow.cl</button>
         </form>
+
+        <div class="transferencia" data-transferencia hidden>
+          {transferenciaConfigurada ? (
+            <>
+              <h2 class="transferencia__titulo">Datos para transferir</h2>
+              <dl class="transferencia__datos">
+                <div>
+                  <dt>Banco</dt>
+                  <dd>{transferencia.banco}</dd>
+                </div>
+                {transferencia.tipoCuenta && (
+                  <div>
+                    <dt>Tipo de cuenta</dt>
+                    <dd>{transferencia.tipoCuenta}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Número de cuenta</dt>
+                  <dd>{transferencia.numeroCuenta}</dd>
+                </div>
+                <div>
+                  <dt>Titular</dt>
+                  <dd>{transferencia.titular}</dd>
+                </div>
+                {transferencia.rut && (
+                  <div>
+                    <dt>RUT</dt>
+                    <dd>{transferencia.rut}</dd>
+                  </div>
+                )}
+                <div>
+                  <dt>Monto</dt>
+                  <dd>{formatPrecio(curso.precio, curso.moneda)}</dd>
+                </div>
+              </dl>
+            </>
+          ) : (
+            <p class="transferencia__vacio">
+              Escríbenos por
+              <a href={whatsapp} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+              y te enviamos los datos para transferir.
+            </p>
+          )}
+          <p class="transferencia__nota">
+            Completa tus datos y presiona «Registrar y ver instrucciones»: te enviamos el
+            detalle por correo. Después transfiere y manda el comprobante a
+            <a href={`mailto:${transferencia.emailComprobante}`}>{transferencia.emailComprobante}</a>,
+            indicando tu nombre y el curso. Activamos el acceso dentro de
+            {transferencia.plazoHoras} horas hábiles.
+          </p>
+          <p class="transferencia__orden" data-orden hidden>
+            Código de inscripción: <strong data-codigo></strong>
+          </p>
+        </div>
       </div>
+
       <p class="curso__aviso" data-checkout-msg>
-        Pago con tarjetas, Webpay o transferencia. Después del pago te llega por correo el
-        enlace de acceso al curso. ¿Prefieres pagar por otro medio?
+        Después del pago te llega por correo el enlace de acceso al curso. ¿Prefieres pagar
+        por otro medio?
         <a href={whatsapp} target="_blank" rel="noopener noreferrer">Escríbenos por WhatsApp</a>.
       </p>
+      <p class="curso__estado" data-checkout-estado role="status" aria-live="polite"></p>
+
       <script>
         const form = document.querySelector<HTMLFormElement>('[data-checkout]');
-        const mensaje = document.querySelector<HTMLElement>('[data-checkout-msg]');
+        const boton = form?.querySelector<HTMLButtonElement>('[data-pagar]');
+        const estado = document.querySelector<HTMLElement>('[data-checkout-estado]');
+        const panelTransferencia = document.querySelector<HTMLElement>('[data-transferencia]');
+        const ordenInfo = document.querySelector<HTMLElement>('[data-orden]');
+        const codigoInfo = document.querySelector<HTMLElement>('[data-codigo]');
+
+        const ETIQUETA_FLOW = 'Pagar con Flow.cl';
+        const ETIQUETA_TRANSFERENCIA = 'Registrar y ver instrucciones';
+
+        const metodoElegido = () =>
+          form?.querySelector<HTMLInputElement>('input[name="metodo"]:checked')?.value ?? 'flow';
+
+        function actualizarMetodo() {
+          const esTransferencia = metodoElegido() === 'transferencia';
+          if (panelTransferencia) panelTransferencia.hidden = !esTransferencia;
+          if (boton) boton.textContent = esTransferencia ? ETIQUETA_TRANSFERENCIA : ETIQUETA_FLOW;
+          if (estado) {
+            estado.textContent = '';
+            estado.classList.remove('curso__estado--error');
+          }
+        }
+
+        form
+          ?.querySelectorAll<HTMLInputElement>('input[name="metodo"]')
+          .forEach((radio) => radio.addEventListener('change', actualizarMetodo));
+
+        actualizarMetodo();
+
         form?.addEventListener('submit', async (event) => {
           event.preventDefault();
-          const boton = form.querySelector<HTMLButtonElement>('button');
+          if (!form || !boton) return;
+
+          const metodo = metodoElegido();
           const datos = new FormData(form);
-          const original = boton?.textContent ?? 'Comprar';
-          if (boton) {
-            boton.disabled = true;
-            boton.textContent = 'Redirigiendo…';
+          const etiqueta = metodo === 'transferencia' ? ETIQUETA_TRANSFERENCIA : ETIQUETA_FLOW;
+
+          boton.disabled = true;
+          boton.textContent = metodo === 'transferencia' ? 'Registrando…' : 'Redirigiendo…';
+          if (estado) {
+            estado.textContent = '';
+            estado.classList.remove('curso__estado--error');
           }
+
           try {
             const res = await fetch('/api/checkout', {
               method: 'POST',
@@ -112,29 +230,47 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
                 cursoSlug: datos.get('cursoSlug'),
                 email: datos.get('email'),
                 nombre: datos.get('nombre'),
+                metodo,
               }),
             });
             const payload = (await res.json().catch(() => ({}))) as {
               redirect?: string;
               error?: string;
+              metodo?: string;
+              orderId?: string;
+              correo?: string;
             };
+
             if (payload.redirect) {
               window.location.href = payload.redirect;
               return;
             }
+
+            if (payload.metodo === 'transferencia' && payload.orderId) {
+              if (codigoInfo) codigoInfo.textContent = payload.orderId;
+              if (ordenInfo) ordenInfo.hidden = false;
+              if (estado) {
+                estado.textContent =
+                  payload.correo === 'sent'
+                    ? 'Listo: te enviamos las instrucciones por correo. Recuerda enviar el comprobante.'
+                    : 'Registramos tu inscripción. Revisa los datos para transferir y envíanos el comprobante.';
+              }
+              panelTransferencia?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              return;
+            }
+
             throw new Error(payload.error ?? 'No pudimos iniciar el pago.');
           } catch (error) {
-            if (mensaje) {
-              mensaje.textContent =
+            if (estado) {
+              estado.classList.add('curso__estado--error');
+              estado.textContent =
                 error instanceof Error
                   ? error.message
                   : 'No pudimos iniciar el pago. Intenta nuevamente.';
             }
           } finally {
-            if (boton) {
-              boton.disabled = false;
-              boton.textContent = original;
-            }
+            boton.disabled = false;
+            boton.textContent = etiqueta;
           }
         });
       </script>
@@ -257,25 +393,29 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
     object-fit: cover;
   }
   .curso__compra {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 1.2rem 1.4rem;
+    display: grid;
+    gap: 1.1rem;
+    padding: 1.2rem 1.4rem 1.4rem;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
   }
+  .curso__precio-bloque {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.3rem 0.9rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--line);
+  }
   .curso__precio-label {
-    display: block;
+    flex-basis: 100%;
     color: var(--muted);
     font-size: 0.72rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
   .curso__precio {
-    display: block;
     font-family: var(--font-display);
     font-size: 1.8rem;
     line-height: 1.1;
@@ -294,10 +434,8 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
     font-weight: 700;
   }
   .curso__form {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
+    display: grid;
+    gap: 0.9rem;
   }
   .curso__form-campos {
     display: flex;
@@ -305,6 +443,7 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
     gap: 0.5rem;
   }
   .curso__form input {
+    flex: 1 1 200px;
     padding: 0.7rem 0.9rem;
     font: inherit;
     font-size: 0.9rem;
@@ -315,6 +454,128 @@ const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;
   }
   .curso__form input[type='email'] {
     min-width: 210px;
+  }
+  .curso__form button {
+    justify-self: start;
+  }
+  .pago {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .pago__legend {
+    margin-bottom: 0.45rem;
+    padding: 0;
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .pago__opciones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.6rem;
+  }
+  .pago__opcion {
+    position: relative;
+    display: block;
+    cursor: pointer;
+  }
+  .pago__opcion input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .pago__caja {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    height: 100%;
+    padding: 0.8rem 0.95rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .pago__opcion input:checked + .pago__caja {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 22%, transparent);
+  }
+  .pago__opcion input:focus-visible + .pago__caja {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+  }
+  .pago__titulo {
+    font-weight: 700;
+  }
+  .pago__detalle {
+    color: var(--muted);
+    font-size: 0.82rem;
+  }
+  .transferencia {
+    padding: 1rem 1.1rem;
+    background: color-mix(in srgb, var(--brand) 6%, var(--surface));
+    border: 1px dashed color-mix(in srgb, var(--brand) 35%, var(--line));
+    border-radius: var(--radius-lg);
+  }
+  .transferencia__titulo {
+    margin: 0 0 0.6rem;
+    font-size: 1.05rem;
+  }
+  .transferencia__datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.55rem 1.2rem;
+    margin: 0 0 0.85rem;
+  }
+  .transferencia__datos dt {
+    color: var(--muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .transferencia__datos dd {
+    margin: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  .transferencia__nota,
+  .transferencia__vacio {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+  .transferencia__nota a,
+  .transferencia__vacio a {
+    color: var(--brand);
+    font-weight: 700;
+  }
+  .transferencia__orden {
+    margin: 0.85rem 0 0;
+    padding: 0.55rem 0.75rem;
+    background: var(--surface);
+    border-radius: var(--radius);
+    font-size: 0.86rem;
+  }
+  .transferencia__orden [data-codigo] {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    overflow-wrap: anywhere;
+  }
+  .curso__estado {
+    margin-top: 0.6rem;
+    color: var(--brand);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .curso__estado:empty {
+    display: none;
+  }
+  .curso__estado--error {
+    color: #8a2f25;
   }
   .sr-only {
     position: absolute;

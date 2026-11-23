@@ -345,9 +345,26 @@ El precio se define en CLP (IVA incluido) y el curso no aparece hasta marcar
 | `/acceso/[token]` | Canje del enlace del correo (crea sesión) |
 | `/curso/[slug]/ver` | Área protegida con los videos |
 | `/admin/ordenes` | Panel de órdenes (Basic auth con `ADMIN_TOKEN`) |
-| `/api/checkout` | Crea la orden y el pago en Flow |
+| `/api/checkout` | Crea la orden y el pago en Flow, o la orden pendiente por transferencia |
 | `/api/webhooks/flow` | Confirma el pago y envía el correo |
 | `/api/acceso/reenviar` | Reenvía el enlace de acceso |
+
+### Métodos de pago
+
+La página de cada curso ofrece dos opciones:
+
+- **Pagar online (Flow.cl)**: tarjetas y Webpay. Flow confirma por webhook y el
+  acceso se envía automáticamente.
+- **Transferencia bancaria**: se registra la orden como `pending`, se muestra el
+  código de inscripción y se envía un correo con las instrucciones. Cuando
+  confirmes la transferencia en `/admin/ordenes` con **Marcar pagada**, se libera
+  el acceso y se envía el enlace al comprador.
+
+Los datos de la cuenta se configuran en `src/data/site.ts`, dentro de
+`pagos.transferencia` (`banco`, `tipoCuenta`, `numeroCuenta`, `titular`, `rut`,
+`emailComprobante`, `plazoHoras`). Mientras `banco`, `numeroCuenta` y `titular`
+estén vacíos, la página invita a coordinar la transferencia por WhatsApp en vez
+de mostrar una cuenta incompleta.
 
 ### Variables y secretos
 
@@ -381,9 +398,11 @@ pnpm build
 npx wrangler dev --local
 ```
 
-Con `PAYMENTS_MODE=demo`, el checkout crea la orden pagada, genera el enlace y
-redirige a `/acceso/<token>` como si hubiera pagado. Los correos quedan
-registrados en `email_log` como `skipped` si no hay `RESEND_API_KEY`.
+Con `PAYMENTS_MODE=demo`, el checkout de Flow crea la orden pagada, genera el
+enlace y redirige a `/acceso/<token>` como si hubiera pagado. La transferencia
+bancaria no se ve afectada por `demo`: siempre queda pendiente hasta que la
+confirmes en el panel. Los correos quedan registrados en `email_log` como
+`skipped` si no hay `RESEND_API_KEY`.
 
 ### Producción
 

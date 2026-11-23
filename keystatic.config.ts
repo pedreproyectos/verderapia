@@ -93,6 +93,42 @@ export default config({
       },
     }),
 
+    videos: collection({
+      label: "Videos (Conócenos)",
+      description:
+        "Máximo 4 videos. Se muestran de dos por fila (uno por fila en móvil) y en el orden indicado.",
+      path: "src/content/videos/*",
+      format: { data: "yaml" },
+      slugField: "titulo",
+      columns: ["orden", "vimeo"],
+      schema: {
+        titulo: fields.slug({
+          name: { label: "Título" },
+          slug: {
+            label: "Identificador",
+            description:
+              "Nombre del archivo. No cambia lo que se ve en el sitio.",
+          },
+        }),
+        vimeo: fields.text({
+          label: "Enlace o ID de Vimeo",
+          description:
+            "Pega el enlace del video (https://vimeo.com/…) o solo el ID. Si es privado, incluye el hash: https://vimeo.com/ID/HASH.",
+          validation: { isRequired: true },
+        }),
+        descripcion: fields.text({
+          label: "Descripción",
+          multiline: true,
+          description: "Opcional. Aparece bajo el título del video.",
+        }),
+        orden: fields.integer({
+          label: "Orden",
+          description: "Los videos se muestran de menor a mayor.",
+          defaultValue: 0,
+        }),
+      },
+    }),
+
     pilares: collection({
       label: "Pilares (Verde, Arte, Terapia)",
       path: "src/content/pilares/*",

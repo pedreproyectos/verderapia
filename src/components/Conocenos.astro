@@ -1,0 +1,110 @@
+---
+import { getVideos, vimeoEmbedUrl } from '../data/videos';
+
+// Los videos se cargan desde Keystatic (/keystatic → Videos).
+// Mientras no haya ninguno, la sección se muestra con un mensaje breve.
+const videos = await getVideos();
+---
+
+<section class="conocenos section" id="conocenos" aria-labelledby="conocenos-title">
+  <div class="container">
+    <header class="conocenos__head" data-reveal>
+      <p class="eyebrow">Videos</p>
+      <h2 id="conocenos-title">Conócenos</h2>
+    </header>
+
+    {videos.length > 0 ? (
+      <div
+        class:list={[
+          'conocenos__grid',
+          videos.length === 1 && 'conocenos__grid--single',
+        ]}
+      >
+        {videos.map((video, i) => (
+          <figure
+            class="conocenos__item"
+            data-reveal
+            style={`--reveal-delay:${Math.min(i, 4) * 90}ms`}
+          >
+            <div class="conocenos__frame">
+              <iframe
+                src={vimeoEmbedUrl(video)}
+                title={`${video.titulo} — video de Verderapia`}
+                loading="lazy"
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
+            <figcaption class="conocenos__caption">
+              <h3>{video.titulo}</h3>
+              {video.descripcion && <p>{video.descripcion}</p>}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    ) : (
+      <p class="conocenos__empty muted" data-reveal>
+        Pronto compartiremos aquí videos para que nos conozcas.
+      </p>
+    )}
+  </div>
+</section>
+
+<style>
+  .conocenos__head {
+    max-width: 640px;
+    margin-bottom: clamp(2rem, 5vw, 3rem);
+  }
+  .conocenos__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1.2rem, 3vw, 2rem);
+  }
+  .conocenos__grid--single {
+    grid-template-columns: 1fr;
+    max-width: 920px;
+  }
+  .conocenos__item {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .conocenos__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #14201a;
+  }
+  .conocenos__frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .conocenos__caption {
+    padding: clamp(1rem, 2.4vw, 1.5rem);
+  }
+  .conocenos__caption h3 {
+    font-size: 1.15rem;
+  }
+  .conocenos__caption p {
+    margin-top: 0.4rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .conocenos__empty {
+    max-width: 52ch;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px dashed var(--line);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+  }
+  @media (max-width: 760px) {
+    .conocenos__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

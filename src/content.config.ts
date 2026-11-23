@@ -30,6 +30,18 @@ const slides = defineCollection({
   }),
 });
 
+/** Videos de la sección "Conócenos" del home. Editables desde Keystatic (/keystatic). */
+const videos = defineCollection({
+  loader: glob({ pattern: '**/*.yaml', base: './src/content/videos' }),
+  schema: z.object({
+    titulo: z.string(),
+    descripcion: z.string().optional(),
+    // Enlace de Vimeo (público, embed o ID suelto).
+    vimeo: z.string(),
+    orden: z.number().default(0),
+  }),
+});
+
 /** Pilares del sitio (Verde, Arte, Terapia). Editables desde Keystatic (/keystatic). */
 const pilares = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/pilares' }),
@@ -175,6 +187,7 @@ const ctas = defineCollection({
 export const collections = {
   posts,
   slides,
+  videos,
   pilares,
   ctas,
   historia,
