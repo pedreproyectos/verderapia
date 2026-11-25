@@ -149,13 +149,13 @@ const cursos = defineCollection({
     partes: z
       .array(
         z.object({
-          titulo: z.string(),
+          titulo: z.string().default(''),
           descripcion: z.string().optional(),
           videos: z
             .array(
               z.object({
                 videoId: z.string().optional(),
-                titulo: z.string(),
+                titulo: z.string().default(''),
                 vimeoId: z.string().optional(),
                 vimeoHash: z.string().optional(),
                 duracionMin: z.number().default(0),

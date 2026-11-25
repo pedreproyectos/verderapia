@@ -12,6 +12,8 @@ partes:
   - titulo: Curso Pranayamas
     descripcion: Regulación emocional
     videos:
-      - vimeoId: '1249479109'
+      - videoId: pranayamas01
+        titulo: Pranayamas
+        vimeoId: '1249479109'
         vimeoHash: pranayamas01
         duracionMin: 20

@@ -95,8 +95,6 @@ export default config({
 
     videos: collection({
       label: "Videos (Conócenos)",
-      description:
-        "Máximo 4 videos. Se muestran de dos por fila (uno por fila en móvil) y en el orden indicado.",
       path: "src/content/videos/*",
       format: { data: "yaml" },
       slugField: "titulo",
@@ -384,7 +382,10 @@ export default config({
         }),
         partes: fields.array(
           fields.object({
-            titulo: fields.text({ label: "Título de la parte" }),
+            titulo: fields.text({
+              label: "Título de la parte",
+              validation: { isRequired: true },
+            }),
             descripcion: fields.text({ label: "Descripción", multiline: true }),
             videos: fields.array(
               fields.object({
@@ -393,7 +394,10 @@ export default config({
                   description:
                     "Identificador estable, por ejemplo p1v1. No lo cambies si ya hay progreso guardado.",
                 }),
-                titulo: fields.text({ label: "Título del video" }),
+                titulo: fields.text({
+                  label: "Título del video",
+                  validation: { isRequired: true },
+                }),
                 vimeoId: fields.text({
                   label: "Vimeo ID",
                   description:
