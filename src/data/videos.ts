@@ -28,6 +28,11 @@ export function parseVimeo(value: string): VimeoRef | null {
   const player = input.match(/player\.vimeo\.com\/video\/(\d+)(?:[?&]h=([A-Za-z0-9]+))?/);
   if (player) return { vimeoId: player[1], vimeoHash: player[2] };
 
+  // Enlace del panel de administración: https://vimeo.com/manage/videos/123
+  // (solo sirve para videos públicos o para obtener el ID).
+  const manage = input.match(/vimeo\.com\/manage\/videos\/(\d+)(?:\/([A-Za-z0-9]+))?/);
+  if (manage) return { vimeoId: manage[1], vimeoHash: manage[2] };
+
   const page = input.match(/vimeo\.com\/(\d+)(?:\/([A-Za-z0-9]+))?/);
   if (page) return { vimeoId: page[1], vimeoHash: page[2] };
 
