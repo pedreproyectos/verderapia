@@ -27,14 +27,33 @@ const videos = await getVideos();
             style={`--reveal-delay:${Math.min(i, 4) * 90}ms`}
           >
             <div class="conocenos__frame">
-              <iframe
-                src={vimeoEmbedUrl(video)}
-                title={`${video.titulo} — video de Verderapia`}
-                loading="lazy"
-                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                referrerpolicy="strict-origin-when-cross-origin"
-                allowfullscreen
-              ></iframe>
+              <button
+                class="conocenos__play"
+                type="button"
+                data-vimeo-src={vimeoEmbedUrl(video)}
+                data-vimeo-title={`${video.titulo} — video de Verderapia`}
+                aria-label={`Reproducir ${video.titulo}`}
+              >
+                {video.thumbnail ? (
+                  <img src={video.thumbnail} alt="" loading="lazy" decoding="async" />
+                ) : (
+                  <span class="conocenos__fallback" aria-hidden="true"></span>
+                )}
+                <span class="conocenos__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+              </button>
+              <noscript>
+                <iframe
+                  src={vimeoEmbedUrl(video)}
+                  title={`${video.titulo} — video de Verderapia`}
+                  loading="lazy"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media"
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </noscript>
             </div>
             <figcaption class="conocenos__caption">
               <h3>{video.titulo}</h3>
@@ -73,9 +92,56 @@ const videos = await getVideos();
     box-shadow: var(--shadow);
   }
   .conocenos__frame {
+    --conocenos-bg: color-mix(in srgb, var(--brand) 12%, #fff);
     position: relative;
     aspect-ratio: 16 / 9;
-    background: #14201a;
+    background: var(--conocenos-bg);
+  }
+  .conocenos__play {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: var(--conocenos-bg);
+    cursor: pointer;
+    overflow: hidden;
+  }
+  .conocenos__play img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease, opacity 0.3s ease;
+  }
+  .conocenos__play:hover img {
+    transform: scale(1.03);
+  }
+  .conocenos__fallback {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--brand) 22%, #fff), transparent 60%),
+      var(--conocenos-bg);
+  }
+  .conocenos__icon {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    width: 66px;
+    height: 66px;
+    margin: auto;
+    border-radius: 50%;
+    color: var(--brand);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.45);
+    transition: transform 0.3s ease, background 0.3s ease;
+  }
+  .conocenos__play:hover .conocenos__icon {
+    transform: scale(1.08);
+    background: #fff;
   }
   .conocenos__frame iframe {
     position: absolute;
@@ -83,6 +149,7 @@ const videos = await getVideos();
     width: 100%;
     height: 100%;
     border: 0;
+    background: var(--conocenos-bg);
   }
   .conocenos__caption {
     padding: clamp(1rem, 2.4vw, 1.5rem);
@@ -108,3 +175,25 @@ const videos = await getVideos();
     }
   }
 </style>
+
+<script>
+  // El reproductor de Vimeo se carga recién al hacer clic: así la sección se ve
+  // en verde claro (miniatura + botón) y no con el fondo negro del player.
+  document.querySelectorAll<HTMLButtonElement>('[data-vimeo-src]').forEach((boton) => {
+    boton.addEventListener('click', () => {
+      const src = boton.dataset.vimeoSrc;
+      const title = boton.dataset.vimeoTitle ?? '';
+      if (!src) return;
+
+      const iframe = document.createElement('iframe');
+      const separador = src.includes('?') ? '&' : '?';
+      iframe.src = `${src}${separador}autoplay=1`;
+      iframe.title = title;
+      iframe.allow =
+        'autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+
+      boton.replaceWith(iframe);
+    });
+  });
+</script>

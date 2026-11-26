@@ -7,6 +7,8 @@ export type Video = {
   vimeoId: string;
   vimeoHash?: string;
   orden: number;
+  /** Miniatura de Vimeo, obtenida en build (puede faltar). */
+  thumbnail?: string;
 };
 
 type VimeoRef = Pick<Video, 'vimeoId' | 'vimeoHash'>;
@@ -58,6 +60,22 @@ export function vimeoEmbedUrl(video: VimeoRef): string {
 /** Máximo de videos visibles en la sección "Conócenos". */
 export const MAX_VIDEOS = 4;
 
+/** Miniatura de Vimeo (se pide en build; si falla, se usa un fondo verde). */
+async function miniaturaVimeo(video: VimeoRef): Promise<string | undefined> {
+  try {
+    const url = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(
+      `https://vimeo.com/${video.vimeoId}${video.vimeoHash ? `/${video.vimeoHash}` : ''}`,
+    )}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
+    if (!res.ok) return undefined;
+    const data = (await res.json()) as { thumbnail_url?: string };
+    // Vimeo entrega una miniatura pequeña (295x166); pedimos una más grande.
+    return data.thumbnail_url?.replace(/_\d+x\d+/, '_1280x720');
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Devuelve los videos de la sección "Conócenos", ordenados por `orden`.
  * Las entradas sin un enlace de Vimeo válido se omiten y solo se muestran
@@ -93,5 +111,11 @@ export async function getVideos(): Promise<Video[]> {
     );
   }
 
-  return videos.slice(0, MAX_VIDEOS);
+  const seleccionados = videos.slice(0, MAX_VIDEOS);
+  return Promise.all(
+    seleccionados.map(async (video) => ({
+      ...video,
+      thumbnail: await miniaturaVimeo(video),
+    })),
+  );
 }
