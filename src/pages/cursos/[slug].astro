@@ -10,6 +10,7 @@ import {
   duracionTotalMin,
   formatDuracion,
 } from '../../data/cursos';
+import { navLinks } from '../../data/nav';
 
 export async function getStaticPaths() {
   const cursos = await getCursos();
@@ -24,13 +25,6 @@ const { curso } = Astro.props;
 const videos = contarVideos(curso);
 const duracion = formatDuracion(duracionTotalMin(curso));
 const parrafos = (curso.descripcion ?? '').split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
-
-const navLinks = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Cursos', href: '/cursos/' },
-  { label: 'Novedades', href: '/posts/' },
-  { label: 'Contacto', href: '/#contacto' },
-];
 
 const mensaje = encodeURIComponent(`Hola, quiero inscribirme en el curso "${curso.titulo}".`);
 const whatsapp = `${site.contacto.whatsappLink}?text=${mensaje}`;

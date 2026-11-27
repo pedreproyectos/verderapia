@@ -10,12 +10,7 @@ import {
   getOrden,
   getTokenPorValor,
 } from '../../lib/paywall';
-
-const navLinks = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Cursos', href: '/cursos/' },
-  { label: 'Contacto', href: '/#contacto' },
-];
+import { navLinks } from '../../data/nav';
 
 const env = await getEnv(Astro.locals);
 const token = Astro.params.token ?? '';

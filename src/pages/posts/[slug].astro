@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection, render } from 'astro:content';
+import { navLinks } from '../../data/nav';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -28,7 +29,7 @@ const fecha = new Intl.DateTimeFormat('es-CL', {
   description={post.data.description}
   image={post.data.cover}
 >
-  <SiteNav variant="solid" />
+  <SiteNav variant="solid" links={navLinks} />
   <main class="articulo">
     <div class="container container--narrow">
       <p class="articulo__back"><a href="/posts/">← Novedades</a></p>

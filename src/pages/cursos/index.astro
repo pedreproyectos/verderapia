@@ -2,22 +2,10 @@
 import Base from '../../layouts/Base.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import Footer from '../../components/Footer.astro';
-import {
-  getCursos,
-  formatPrecio,
-  contarVideos,
-  duracionTotalMin,
-  formatDuracion,
-} from '../../data/cursos';
+import { getCursos, formatPrecio, contarVideos, duracionTotalMin, formatDuracion } from '../../data/cursos';
+import { navLinks } from '../../data/nav';
 
 const cursos = await getCursos();
-
-const navLinks = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Cursos', href: '/cursos/' },
-  { label: 'Novedades', href: '/posts/' },
-  { label: 'Contacto', href: '/#contacto' },
-];
 ---
 
 <Base

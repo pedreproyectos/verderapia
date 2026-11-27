@@ -4,6 +4,7 @@ import SiteNav from '../../components/SiteNav.astro';
 import PostCard from '../../components/PostCard.astro';
 import Footer from '../../components/Footer.astro';
 import { getCollection } from 'astro:content';
+import { navLinks } from '../../data/nav';
 
 const posts = (await getCollection('posts'))
   .filter((p) => !p.data.draft)
@@ -11,7 +12,7 @@ const posts = (await getCollection('posts'))
 ---
 
 <Base tema={1} title="Novedades — Verderapia" description="Mensajes semanales, talleres, terapias y novedades de Verderapia.">
-  <SiteNav variant="solid" />
+  <SiteNav variant="solid" links={navLinks} />
   <main class="listado">
     <div class="container">
       <header class="listado__head">
