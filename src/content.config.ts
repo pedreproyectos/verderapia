@@ -131,19 +131,6 @@ const servicios = defineCollection({
   }),
 });
 
-/** Terapias y masajes (lista de precios). Editables desde Keystatic. */
-const terapias = defineCollection({
-  loader: glob({ pattern: '**/*.yaml', base: './src/content/terapias' }),
-  schema: z.object({
-    nombre: z.string(),
-    descripcion: z.string(),
-    duracion: z.string(),
-    precio: z.string(),
-    extra: z.string().optional(),
-    orden: z.number().default(0),
-  }),
-});
-
 /** Cursos en video (asincrónicos). Editables desde Keystatic. */
 const cursos = defineCollection({
   loader: glob({ pattern: '**/*.yaml', base: './src/content/cursos' }),
@@ -204,6 +191,5 @@ export const collections = {
   historia,
   giftcard,
   servicios,
-  terapias,
   cursos,
 };

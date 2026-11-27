@@ -328,37 +328,6 @@ export default config({
       },
     }),
 
-    terapias: collection({
-      label: "Terapias y precios",
-      path: "src/content/terapias/*",
-      format: { data: "yaml" },
-      slugField: "nombre",
-      columns: ["nombre", "precio", "duracion"],
-      schema: {
-        nombre: fields.slug({
-          name: { label: "Nombre" },
-          slug: {
-            label: "Identificador",
-            description:
-              "Nombre del archivo. No cambia lo que se ve en el sitio.",
-          },
-        }),
-        descripcion: fields.text({ label: "Descripción", multiline: true }),
-        duracion: fields.text({ label: "Duración" }),
-        precio: fields.text({ label: "Precio" }),
-        extra: fields.text({
-          label: "Extra",
-          description:
-            "Opcional. Por ejemplo: Masaje + Cama de Jade: $28.000.",
-        }),
-        orden: fields.integer({
-          label: "Orden",
-          description: "Las terapias se muestran de menor a mayor.",
-          defaultValue: 0,
-        }),
-      },
-    }),
-
     cursos: collection({
       label: "Cursos",
       path: "src/content/cursos/*",
