@@ -75,27 +75,6 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
         </ul>
       </div>
     )}
-
-    <div class="instagram__embed" data-reveal>
-      <h3>Publicación destacada</h3>
-      <blockquote
-        class="instagram-media"
-        data-instgrm-permalink="https://www.instagram.com/p/Df9v8e2ylg7/?utm_source=ig_embed&amp;utm_campaign=loading"
-        data-instgrm-version="14"
-        style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:1px auto;max-width:540px;min-width:326px;padding:0;width:calc(100% - 2px);"
-      >
-        <div style="padding:16px;">
-          <a
-            href="https://www.instagram.com/p/Df9v8e2ylg7/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Ver esta publicación en Instagram
-          </a>
-        </div>
-      </blockquote>
-      <script async src="https://www.instagram.com/embed.js" is:inline></script>
-    </div>
   </div>
 </section>
 
@@ -295,20 +274,6 @@ const items: InstaPost[] = posts ?? (await getInstagramPosts());
   }
   .highlights a:hover .highlights__title {
     color: var(--brand);
-  }
-  .instagram__embed {
-    margin-top: clamp(2rem, 4vw, 2.8rem);
-    padding-top: clamp(1.4rem, 3vw, 2rem);
-    border-top: 1px solid var(--line);
-    text-align: center;
-  }
-  .instagram__embed h3 {
-    margin-bottom: 1rem;
-    font-family: var(--font-display);
-    font-size: clamp(1.15rem, 2vw, 1.35rem);
-  }
-  .instagram__embed .instagram-media {
-    text-align: left;
   }
   @media (max-width: 640px) {
     .highlights {
