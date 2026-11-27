@@ -101,6 +101,7 @@ const servicios = defineCollection({
         z.object({
           nombre: z.string(),
           descripcion: z.string().optional(),
+          precio: z.string().default(''),
           duraciones: z.array(z.string()).default([]),
           nota: z.string().optional(),
         }),

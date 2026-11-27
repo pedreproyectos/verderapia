@@ -8,16 +8,19 @@ detalles: []
 orden: 4
 items:
   - nombre: Genograma Familiar
+    precio: ""
     descripcion: |
       Un recorrido de exploración y descubrimiento de tu historia familiar, a través de los linajes materno y paterno. Mediante la investigación y construcción de un diagrama familiar, podrás conocer acontecimientos significativos, observar cómo se vinculaban las distintas generaciones e identificar patrones, roles y dinámicas que pueden estar presentes en tu propia vida. Una invitación a comprender tus raíces y mirar tu historia desde una nueva perspectiva.
     duraciones:
       - 60 min
   - nombre: Ejercicios Sistémicos
+    precio: ""
     descripcion: |
       Dinámicas vivenciales que permiten explorar el lugar que ocupamos dentro de nuestro sistema familiar, reconocer roles asumidos, lealtades invisibles y patrones que pueden estar condicionando nuestra vida. A través de recursos simbólicos y ejercicios de representación, se invita a desarrollar una nueva mirada sobre los vínculos y a encontrar formas más conscientes de relacionarnos.
     duraciones:
       - 60 min
   - nombre: Constelaciones Familiares Individuales
+    precio: ""
     descripcion: |
       Espacio de exploración y comprensión de las dinámicas que se manifiestan en nuestro sistema familiar. A través del uso de fámores (figuras de representación sistémica) y plantillas, se representan simbólicamente los vínculos, roles, lealtades invisibles y posibles conflictos que pueden estar influyendo en nuestra vida.
 

@@ -8,32 +8,38 @@ detalles: []
 orden: 2
 items:
   - nombre: Terapia Floral
+    precio: ""
     descripcion: |
       Acompañamiento emocional mediante esencias florales seleccionadas de acuerdo con las necesidades y el momento personal de cada consultante. Desde el enfoque de la terapia floral, se busca abordar emociones como el miedo, la inseguridad, la tristeza o la incertidumbre, favoreciendo el autoconocimiento y la armonía emocional.
     duraciones:
       - 60 min
   - nombre: Tarot + Terapia Floral
+    precio: ""
     descripcion: |
       Una experiencia que integra el lenguaje simbólico del Tarot Evolutivo con el acompañamiento de las esencias florales. El Tarot permite reconocer emociones, patrones y procesos internos, mientras que la terapia floral ofrece un recurso complementario para acompañar lo que emerge durante la sesión.
     nota: Donde los arquetipos revelan y las flores acompañan.
     duraciones:
       - 75 min
   - nombre: Tarot Evolutivo
+    precio: ""
     descripcion: |
       Una herramienta de autoconocimiento que, a través de los símbolos y arquetipos del Tarot, permite explorar situaciones personales, reconocer patrones de comportamiento y comprender los procesos que estamos atravesando. Aporta nuevas perspectivas para tomar decisiones conscientes y descubrir recursos personales frente a los desafíos de la vida.
     duraciones:
       - 60 min
   - nombre: Mapa del Tarot Evolutivo
+    precio: ""
     descripcion: |
       Una exploración profunda de diferentes áreas de la vida mediante una disposición especial de los 22 Arcanos Mayores. Este mapa permite observar cómo se manifiestan los arquetipos en nuestras relaciones, emociones, recursos, desafíos y procesos personales, entregando una visión amplia de nuestro momento actual y de las posibilidades de transformación.
     duraciones:
       - 60 min
   - nombre: Sistema Lenormand
+    precio: ""
     descripcion: |
       Sistema de interpretación de cartas que utiliza un lenguaje simbólico, directo y concreto para explorar situaciones de la vida cotidiana. Permite identificar circunstancias, influencias y posibles escenarios en ámbitos como las relaciones, el amor, el ámbito laboral y las decisiones personales, aportando orientación y claridad frente a una consulta específica.
     duraciones:
       - 60 min
   - nombre: Numerología Pitagórica
+    precio: ""
     descripcion: |
       Un recorrido de autoconocimiento a través de los números presentes en la fecha de nacimiento y el nombre completo. Mediante el análisis numerológico, se exploran características personales, talentos, desafíos y aprendizajes de vida, ofreciendo una mirada simbólica sobre la propia identidad y el camino personal.
     duraciones:

@@ -6,6 +6,7 @@ export type ServicioPrecio = { nombre?: string; detalle?: string; valor?: string
 export type ServicioItem = {
   nombre: string;
   descripcion?: string;
+  precio?: string;
   duraciones: string[];
   nota?: string;
 };

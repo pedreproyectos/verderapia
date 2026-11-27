@@ -269,6 +269,11 @@ export default config({
               label: "Descripción",
               multiline: true,
             }),
+            precio: fields.text({
+              label: "Precio",
+              description:
+                "Por ejemplo: $25.000. Si el valor depende de la duración, puedes escribirlo aquí (ej: 40 min $25.000 · 60 min $35.000).",
+            }),
             duraciones: fields.array(fields.text({ label: "Duración" }), {
               label: "Duraciones",
               itemLabel: (props) => props.value,
