@@ -1,23 +1,47 @@
 nombre: Cuerpo y bienestar
 subtitulo: ""
-descripcion: Cuida tu energía y conecta con tu bienestar.
+descripcion: Masajes y técnicas manuales para liberar tensiones, mejorar la circulación y recuperar la calma.
 icono: cuerpo
 tono: menta
 imagen: ""
 detalles: []
-orden: 4
-horarios:
-  - dia: Lunes y miércoles
-    clases:
-      - hora: "09:00"
-        nombre: Yoga suave
-      - hora: "18:30"
-        nombre: Respiración y calma
-precios:
-  - nombre: Clase suelta
-    detalle: ""
-    valor: "$8.000"
-  - nombre: Mensualidad
-    detalle: 8 clases
-    valor: "$45.000"
-nota: Cupos limitados. Trae tu mat y ropa cómoda.
+orden: 1
+items:
+  - nombre: Masaje de Relajación
+    descripcion: |
+      Una pausa para desconectar del ritmo cotidiano y recuperar la calma. A través de movimientos suaves y envolventes, este masaje ayuda a liberar tensiones, disminuir el estrés y favorecer una profunda sensación de bienestar físico y mental.
+    duraciones:
+      - 40 min
+      - 60 min
+  - nombre: Masaje Descontracturante con Ventosas
+    descripcion: |
+      Técnica que combina maniobras de masaje profundo con la aplicación de ventosas para aliviar la tensión muscular, mejorar la movilidad y favorecer la circulación local. Ideal para quienes presentan rigidez y sobrecarga muscular.
+    duraciones:
+      - 45 min
+      - 75 min
+  - nombre: Masaje Craneal
+    descripcion: |
+      Técnica de movimientos activos y precisos sobre el cuero cabelludo, cabeza y zonas asociadas, que ayuda a liberar tensiones acumuladas, despejar la mente y favorecer la concentración. Contribuye a disminuir el estrés mental, facilitar el descanso y mejorar la calidad del sueño.
+    duraciones:
+      - 40 min
+  - nombre: Masaje de Colon
+    descripcion: |
+      Masaje abdominal realizado mediante movimientos suaves y específicos que acompañan el recorrido natural del colon. Busca favorecer el confort digestivo, aliviar la sensación de tensión abdominal y estimular suavemente el tránsito intestinal.
+    duraciones:
+      - 30 min
+  - nombre: Drenaje Linfático Manual
+    descripcion: |
+      Técnica de movimientos suaves, lentos y rítmicos que estimula el flujo linfático, favoreciendo la eliminación natural del exceso de líquidos y el transporte de sustancias de desecho. Ayuda a disminuir la hinchazón asociada a la retención de líquidos, aliviar la sensación de piernas cansadas y reducir la pesadez corporal.
+    duraciones:
+      - 60 min
+  - nombre: Reflexología Podal
+    descripcion: |
+      Técnica terapéutica que, mediante presiones específicas en puntos y zonas reflejas de los pies, aborda de manera integral los diferentes sistemas del organismo: nervioso, digestivo, circulatorio, linfático, respiratorio, endocrino, entre otros. Desde su enfoque tradicional, busca estimular los mecanismos naturales de autorregulación, liberar tensiones y favorecer el equilibrio físico, mental y emocional.
+    duraciones:
+      - 45 min
+  - nombre: Masaje con Bambú
+    descripcion: |
+      Técnica que utiliza cañas de bambú de diferentes tamaños para realizar movimientos de presión y deslizamiento sobre el cuerpo. Ayuda a liberar tensiones musculares, estimular la circulación local y proporcionar una experiencia de relajación y bienestar.
+    duraciones:
+      - 40 min
+      - 60 min

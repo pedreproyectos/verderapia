@@ -91,6 +91,35 @@ const chevron = '<path d="m9 18 6-6-6-6"/>';
 
             <div class="servicio__body">
               <div class="servicio__body-inner">
+                {s.items.length > 0 && (
+                  <div class="servicio__block">
+                    <h4>Servicios</h4>
+                    <ul class="servicio__items">
+                      {s.items.map((item) => (
+                        <li>
+                          <div class="servicio__item-head">
+                            <span class="servicio__item-name">{item.nombre}</span>
+                            {item.duraciones.length > 0 && (
+                              <span class="servicio__item-dur">
+                                {item.duraciones.join(' · ')}
+                              </span>
+                            )}
+                          </div>
+                          {item.descripcion &&
+                            item.descripcion
+                              .split(/\n{2,}/)
+                              .map((p) => p.trim())
+                              .filter(Boolean)
+                              .map((p) => <p>{p}</p>)}
+                          {item.nota && (
+                            <p class="servicio__item-nota">{item.nota}</p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {s.horarios.length > 0 && (
                   <div class="servicio__block">
                     <h4>Horarios</h4>
@@ -169,9 +198,6 @@ const chevron = '<path d="m9 18 6-6-6-6"/>';
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(0.9rem, 2vw, 1.25rem);
     align-items: start;
-  }
-  .servicio:last-child {
-    grid-column: 1 / -1;
   }
 
   .servicio {
@@ -309,6 +335,50 @@ const chevron = '<path d="m9 18 6-6-6-6"/>';
     color: var(--muted);
     margin-bottom: 0.55rem;
   }
+  .servicio__items {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .servicio__items li {
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--tone-line);
+  }
+  .servicio__items li:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .servicio__item-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 0.8rem;
+  }
+  .servicio__item-name {
+    font-weight: 800;
+    color: var(--ink);
+    font-size: 0.95rem;
+  }
+  .servicio__item-dur {
+    flex: 0 0 auto;
+    padding: 0.15em 0.6em;
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--tone-accent);
+    background: color-mix(in srgb, var(--tone-accent) 10%, white);
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .servicio__items p {
+    margin-top: 0.3rem;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .servicio__item-nota {
+    font-style: italic;
+    color: var(--tone-accent) !important;
+  }
   .servicio__horarios {
     border-top: 1px solid var(--tone-line);
   }
@@ -368,9 +438,6 @@ const chevron = '<path d="m9 18 6-6-6-6"/>';
     }
     .servicios__list {
       grid-template-columns: 1fr;
-    }
-    .servicio:last-child {
-      grid-column: auto;
     }
   }
 </style>

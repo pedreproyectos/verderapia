@@ -1,0 +1,14 @@
+nombre: Mente, cuerpo y espíritu
+subtitulo: ""
+descripcion: Prácticas de movimiento, respiración y conciencia corporal para habitar el cuerpo.
+icono: brote
+tono: verde
+imagen: ""
+detalles: []
+orden: 3
+items:
+  - nombre: Hatha Yoga
+    descripcion: |
+      Una práctica que integra posturas corporales (asanas), respiración consciente y atención plena para favorecer la movilidad, la flexibilidad, la fuerza y el equilibrio físico y mental. Las sesiones incorporan elementos de apoyo (props), como bloques, cinturones y mantas, que permiten adaptar las posturas a las necesidades y posibilidades de cada persona, facilitando una práctica más cómoda, segura y consciente. Un espacio para conectar con el cuerpo, desarrollar la conciencia corporal y cultivar la armonía interior.
+    duraciones:
+      - 90 min

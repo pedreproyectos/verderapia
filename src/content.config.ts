@@ -96,6 +96,16 @@ const servicios = defineCollection({
       .optional(),
     imagen: z.string().optional(),
     detalles: z.array(z.string()).default([]),
+    items: z
+      .array(
+        z.object({
+          nombre: z.string(),
+          descripcion: z.string().optional(),
+          duraciones: z.array(z.string()).default([]),
+          nota: z.string().optional(),
+        }),
+      )
+      .default([]),
     orden: z.number().default(0),
     horarios: z
       .array(

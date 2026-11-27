@@ -259,6 +259,30 @@ export default config({
           description:
             "Líneas breves que aparecen bajo la descripción, por ejemplo: Constelaciones familiares, Genograma.",
         }),
+        items: fields.array(
+          fields.object({
+            nombre: fields.text({
+              label: "Servicio",
+              validation: { isRequired: true },
+            }),
+            descripcion: fields.text({
+              label: "Descripción",
+              multiline: true,
+            }),
+            duraciones: fields.array(fields.text({ label: "Duración" }), {
+              label: "Duraciones",
+              itemLabel: (props) => props.value,
+            }),
+            nota: fields.text({
+              label: "Nota (opcional)",
+              multiline: true,
+            }),
+          }),
+          {
+            label: "Servicios de la categoría",
+            itemLabel: (props) => props.fields.nombre.value || "Servicio",
+          },
+        ),
         orden: fields.integer({
           label: "Orden",
           description: "Los servicios se muestran de menor a mayor.",

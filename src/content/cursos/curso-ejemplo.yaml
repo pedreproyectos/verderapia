@@ -1,8 +1,6 @@
 titulo: Curso de ejemplo
 resumen: Este es un curso de ejemplo para mostrar cómo se administra el contenido.
-descripcion: >-
-  Reemplaza este texto con la descripción real del curso. El curso se organiza
-  en dos partes y cada parte tiene sus videos.
+descripcion: Descripción larga del curso.
 precio: 29900
 moneda: CLP
 publicado: true
