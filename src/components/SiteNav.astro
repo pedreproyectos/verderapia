@@ -12,8 +12,7 @@ const {
   variant = 'transparent',
   links = [
     { label: 'Verde', href: '#verde' },
-    { label: 'Arte', href: '#arte' },
-    { label: 'Terapia', href: '#servicios' },
+    { label: 'Talleres y Servicios', href: '#servicios' },
     { label: 'Cursos', href: '/cursos/' },
     { label: 'Novedades', href: '#novedades' },
     { label: 'Contacto', href: '#contacto' },
@@ -117,6 +116,7 @@ const navCta = cta ?? (mainCta
     position: relative;
     padding-block: 0.3rem;
     opacity: 0.9;
+    white-space: nowrap;
     transition: opacity 0.25s ease;
   }
   .nav__links a::after {
